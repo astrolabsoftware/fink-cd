@@ -1,0 +1,6 @@
+spec:
+  destination:
+    server: https://kubernetes.default.svc
+  source:
+    repoURL: https://github.com/astrolabsoftware/fink-cd
+    targetRevision: 748-add-support-for-argocd
