@@ -37,3 +37,8 @@ kubectl  get secret argocd-cluster -o jsonpath='{.data.admin\.password}' | base6
 
 # See
 https://piotrminkowski.com/2023/05/05/manage-kubernetes-operators-with-argocd/
+
+# Strimzi 0.31.1
+
+Strimzi is deployed using procedure below:
+https://strimzi.io/docs/operators/0.31.1/deploying#deploying-cluster-operator-str
