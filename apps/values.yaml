@@ -1,6 +1,20 @@
+s3:
+  bucket: fink-broker-online
+  endpoint: https://minio.minio:443
+finkbroker:
+  night: null
+  image:
+    repository: "gitlab-registry.in2p3.fr/astrolabsoftware/fink"
+    name: "fink-broker-noscience"
+    tag: null
+  log_level: DEBUG
+  stream2raw:
+    kafka:
+      topic: ztf-stream-sim
 spec:
   destination:
     server: https://kubernetes.default.svc
+  sparkJobNamespaces: ["spark"]
   source:
     repoURL: https://github.com/astrolabsoftware/fink-cd
-    targetRevision: main 
+    targetRevision: main
