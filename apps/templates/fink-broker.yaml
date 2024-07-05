@@ -1,0 +1,33 @@
+# TODO
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: fink-broker
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: fink-broker
+    app.kubernetes.io/part-of: fink-core
+spec:
+  project: default
+  source:
+    path: chart/
+    repoURL: https://github.com/astrolabsoftware/fink-broker.git
+    targetRevision: 828-add-support-for-spark-operator
+    helm:
+      releaseName: fink-broker
+      valuesObject:
+        night: "{{ .Values.finkbroker.night }}"
+        image:
+          repository: "{{ .Values.finkbroker.image.repository }}"
+          name: "{{ .Values.finkbroker.image.name }}"
+          tag: "{{ .Values.finkbroker.image.tag }}"
+        log_level: "{{ .Values.finkbroker.log_level }}"
+        stream2raw:
+          kafka:
+            topic: "{{ .Values.finkbroker.stream2raw.kafka.topic }}"
+        s3:
+          bucket: "{{.Values.s3.bucket }}"
+          endpoint: "{{.Values.s3.endpoint }}"
+  destination:
+    server: {{ .Values.spec.destination.server }}
+    namespace: spark

@@ -5,6 +5,9 @@ metadata:
   namespace: argocd
   finalizers:
   - resources-finalizer.argocd.argoproj.io
+  labels:
+    app.kubernetes.io/name: strimzi
+    app.kubernetes.io/part-of: fink-operator
 spec:
   destination:
     server: {{ .Values.spec.destination.server }}
