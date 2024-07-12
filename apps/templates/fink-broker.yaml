@@ -12,7 +12,8 @@ spec:
   source:
     path: chart/
     repoURL: https://github.com/astrolabsoftware/fink-broker.git
-    targetRevision: main 
+    # TODO use fink-broker hash
+    targetRevision: master 
     helm:
       releaseName: fink-broker
       valuesObject:
