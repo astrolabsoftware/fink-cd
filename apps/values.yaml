@@ -17,4 +17,4 @@ spec:
   sparkJobNamespaces: ["spark"]
   source:
     repoURL: https://github.com/astrolabsoftware/fink-cd
-    targetRevision: master
+    targetRevision: main
