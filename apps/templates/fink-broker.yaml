@@ -12,7 +12,7 @@ spec:
   source:
     path: chart/
     repoURL: https://github.com/astrolabsoftware/fink-broker.git
-    targetRevision: 828-add-support-for-spark-operator
+    targetRevision: main 
     helm:
       releaseName: fink-broker
       valuesObject:
