@@ -13,21 +13,14 @@ spec:
     path: chart/
     repoURL: https://github.com/astrolabsoftware/fink-broker.git
     # TODO use fink-broker hash
-    targetRevision: master 
+    targetRevision: "{{ .Values.finkbroker.revision }}"
     helm:
       releaseName: fink-broker
+      valueFiles:
+        - "{{ .Values.finkbroker.valueFile }}"
       valuesObject:
-        night: "{{ .Values.finkbroker.night }}"
-        image:
-          repository: "{{ .Values.finkbroker.image.repository }}"
-          name: "{{ .Values.finkbroker.image.name }}"
-          tag: "{{ .Values.finkbroker.image.tag }}"
-        log_level: "{{ .Values.finkbroker.log_level }}"
-        stream2raw:
-          kafka:
-            topic: "{{ .Values.finkbroker.stream2raw.kafka.topic }}"
         s3:
-          bucket: "{{.Values.s3.bucket }}"
+          bucket: "{{ .Values.s3.bucket }}"
           endpoint: "{{.Values.s3.endpoint }}"
   destination:
     server: {{ .Values.spec.destination.server }}
