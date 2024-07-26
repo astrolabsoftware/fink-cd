@@ -1,19 +1,26 @@
+{{ if .Values.e2e.enabled }}
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: strimzi
   namespace: argocd
-  finalizers:
-  - resources-finalizer.argocd.argoproj.io
   labels:
     app.kubernetes.io/name: strimzi
-    app.kubernetes.io/part-of: fink-operator
+    app.kubernetes.io/part-of: fink
+    app.kubernetes.io/component: operator
 spec:
+  project: default
+  source:
+    chart: strimzi-kafka-operator
+    repoURL: quay.io/strimzi-helm
+    targetRevision: 0.35.1
+    helm:
+      releaseName: strimzi
   destination:
     server: {{ .Values.spec.destination.server }}
     namespace: kafka
-  project: default
-  source:
-    path: strimzi
-    repoURL: {{ .Values.spec.source.repoURL }}
-    targetRevision: {{ .Values.spec.source.targetRevision }}
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
+      - ApplyOutOfSyncOnly=true
+{{ end }}

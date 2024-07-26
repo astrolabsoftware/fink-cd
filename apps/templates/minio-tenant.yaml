@@ -1,3 +1,4 @@
+{{ if .Values.e2e.enabled }}
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
@@ -5,7 +6,10 @@ metadata:
   namespace: argocd
   labels:
     app.kubernetes.io/name: minio-tenant
-    app.kubernetes.io/part-of: fink-prereq
+    app.kubernetes.io/part-of: fink
+    app.kubernetes.io/component: storage
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io
 spec:
   project: default
   source:
@@ -25,3 +29,8 @@ spec:
   destination:
     server: "https://kubernetes.default.svc"
     namespace: minio
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
+      - ApplyOutOfSyncOnly=true
+{{ end }}

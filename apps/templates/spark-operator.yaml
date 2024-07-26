@@ -5,33 +5,29 @@ metadata:
   namespace: argocd
   labels:
     app.kubernetes.io/name: spark-operator
-    app.kubernetes.io/part-of: fink-operator
+    app.kubernetes.io/part-of: fink
+    app.kubernetes.io/component: operator
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io
 spec:
   project: default
   source:
     chart: spark-operator
     repoURL: https://kubeflow.github.io/spark-operator
-    targetRevision: 1.4.2
+    targetRevision: 2.0.0-rc.0
     helm:
       releaseName: spark-operator
       valuesObject:
         webhook:
           enable: true
-        sparkJobNamespaces: {{ .Values.spec.sparkJobNamespaces }}
-        # FIXME: Creating rbac and sa in argocd prevent correct startup of spark-operator
-        # see: https://github.com/kubeflow/spark-operator/issues/1894
-        serviceAccounts:
-          spark:
-            create: false
-            name: spark
-          sparkoperator:
-            create: false
-            name: spark-operator
-        rbac:
-          createClusterRole: false
+        spark:
+          jobNamespaces: ["{{.Values.spec.sparkNamespace}}"]
   destination:
     server: {{ .Values.spec.destination.server }}
     namespace: spark-operator
   syncPolicy:
     syncOptions:
       - CreateNamespace=true
+      # See https://github.com/argoproj/argo-cd/issues/820 and https://github.com/argoproj/argo-cd/issues/13100
+      - ServerSideApply=true
+      - ApplyOutOfSyncOnly=true
