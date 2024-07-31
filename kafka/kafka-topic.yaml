@@ -1,9 +1,10 @@
 apiVersion: kafka.strimzi.io/v1beta2
 kind: KafkaTopic
 metadata:
-  name: fink_sn_candidates_ztf
+  name: toto
   labels:
     strimzi.io/cluster: "kafka-cluster"
 spec:
   partitions: 3
   replicas: 1
+  topicName: fink_sn_candidates_ztf
