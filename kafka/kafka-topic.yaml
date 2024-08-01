@@ -7,4 +7,3 @@ metadata:
 spec:
   partitions: 3
   replicas: 1
-  topicName: fink_sn_candidates_ztf
