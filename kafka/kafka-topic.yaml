@@ -1,3 +1,6 @@
+# Kafka topic used to check that Kafka is up and running
+# when running 'argocd app wait kafka'
+# might not be needed in the future
 apiVersion: kafka.strimzi.io/v1beta2
 kind: KafkaTopic
 metadata:
