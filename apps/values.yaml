@@ -1,15 +1,20 @@
 s3:
   bucket: fink-broker-online
   endpoint: https://minio.minio:443
-finkbroker:
-  # Revision for the fink-broker chart
-  revision: nil
-  # value file, must be in fink-broker chart/
-  valueFile: nil
+e2e:
+  # Install applications required by fink for end-to-end testing:
+  # minio-operator, minio-tenant, fink-alert-simulator
+  # strimzi, kafka-cluster
+  enabled: true
 spec:
   destination:
     server: https://kubernetes.default.svc
-  sparkJobNamespaces: ["spark"]
+  sparkNamespace: spark
   source:
     repoURL: https://github.com/astrolabsoftware/fink-cd
-    targetRevision: main
+    targetRevision:
+      default: nil
+      # Revision for the fink-alert-simulator chart
+      finkalertsimulator: nil
+      # Revision for the fink-broker chart
+      finkbroker: nil

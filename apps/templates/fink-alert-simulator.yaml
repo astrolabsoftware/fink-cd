@@ -1,30 +1,26 @@
+{{ if .Values.e2e.enabled }}
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: fink-broker
+  name: fink-alert-simulator
   namespace: argocd
   labels:
-    app.kubernetes.io/name: fink-broker
-    app.kubernetes.io/part-of: fink-core
+    app.kubernetes.io/name: fink-alert-simulator
+    app.kubernetes.io/part-of: fink-ci
   finalizers:
   - resources-finalizer.argocd.argoproj.io
 spec:
   project: default
   source:
     path: chart/
-    repoURL: https://github.com/astrolabsoftware/fink-broker.git
-    # TODO use fink-broker hash
+    repoURL: https://github.com/astrolabsoftware/fink-alert-simulator.git
     targetRevision: "{{ .Values.spec.source.targetRevision.finkalertsimulator }}"
     helm:
-      releaseName: fink-broker
-      valuesObject:
-        s3:
-          bucket: "{{ .Values.s3.bucket }}"
-          endpoint: "{{.Values.s3.endpoint }}"
+      releaseName: fink-alert-simulator
   destination:
     server: {{ .Values.spec.destination.server }}
     namespace: {{ .Values.spec.sparkNamespace }}
   syncPolicy:
     syncOptions:
-    # - Replace=true
     - CreateNamespace=true
+{{ end }}

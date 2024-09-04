@@ -1,3 +1,4 @@
+{{ if .Values.e2e.enabled }}
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
@@ -5,7 +6,8 @@ metadata:
   namespace: argocd
   labels:
     app.kubernetes.io/name: kafka
-    app.kubernetes.io/part-of: fink-prereq
+    app.kubernetes.io/part-of: fink
+    app.kubernetes.io/component: storage
   finalizers:
   - resources-finalizer.argocd.argoproj.io
 spec:
@@ -16,4 +18,9 @@ spec:
   source:
     path: kafka
     repoURL: {{ .Values.spec.source.repoURL }}
-    targetRevision: {{ .Values.spec.source.targetRevision }}
+    targetRevision: {{ .Values.spec.source.targetRevision.default }}
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
+      - ApplyOutOfSyncOnly=true
+{{ end }}
