@@ -1,0 +1,21 @@
+---
+apiVersion: zookeeper.stackable.tech/v1alpha1
+kind: ZookeeperCluster
+metadata:
+  name: simple-zk
+  annotations:
+    argocd.argoproj.io/sync-wave: "-1"
+spec:
+  image:
+    productVersion: 3.9.2
+  servers:
+    config:
+      resources:
+        cpu:
+          min: "0"
+        memory:
+          limit: "256Mi"
+    roleGroups:
+      default:
+        replicas: 1
+

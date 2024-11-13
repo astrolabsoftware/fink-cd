@@ -1,0 +1,45 @@
+{{ if and .Values.e2e.enabled .Values.stackable.enabled }}
+{{- range $.Values.stackable.operators }}
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ . }}-operator"
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: "{{ . }}-operator"
+    app.kubernetes.io/part-of: fink
+    app.kubernetes.io/component: operator
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  ignoreDifferences:
+  - group: "apiextensions.k8s.io"
+    kind: "CustomResourceDefinition"
+    # Default values for these fields appears explicitely in desired state but are removed from actual state
+    jqPathExpressions:
+    - .spec.names.categories | select(. == [])
+    - .spec.names.shortNames | select(. == [])
+    - .spec.versions[].additionalPrinterColumns | select(. == [])
+  source:
+    chart: "{{ . }}-operator"
+    repoURL: https://repo.stackable.tech/repository/helm-stable/
+    targetRevision: 24.11.0
+    helm:
+      releaseName: "{{ . }}-operator"
+      valuesObject:
+        resources:
+          requests:
+            cpu: "0"
+            memory: "0"
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: stackable-operators
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
+      - RespectIgnoreDifferences=true
+---
+{{- end }}
+{{ end }}
