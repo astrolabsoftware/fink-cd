@@ -1,0 +1,26 @@
+{{ if .Values.e2e.enabled }}
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: hdfs
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: hdfs
+    app.kubernetes.io/part-of: fink
+    app.kubernetes.io/component: storage
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io
+spec:
+  destination:
+    server: {{ .Values.spec.destination.server }}
+    namespace: hdfs
+  project: default
+  source:
+    path: hdfs
+    repoURL: {{ .Values.spec.source.repoURL }}
+    targetRevision: {{ .Values.spec.source.targetRevision.default }}
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
+      - ApplyOutOfSyncOnly=true
+{{ end }}
