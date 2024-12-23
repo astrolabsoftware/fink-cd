@@ -18,9 +18,14 @@ spec:
     helm:
       releaseName: fink-broker
       valuesObject:
+        {{- if .Values.s3.enabled }}
+        storage: s3
         s3:
           bucket: "{{ .Values.s3.bucket }}"
           endpoint: "{{.Values.s3.endpoint }}"
+        {{- else if .Values.stackable.enabled }}
+        storage: hdfs
+        {{- end }}
   destination:
     server: {{ .Values.spec.destination.server }}
     namespace: {{ .Values.spec.sparkNamespace }}
