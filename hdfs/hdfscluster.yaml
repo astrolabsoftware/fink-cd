@@ -1,0 +1,45 @@
+---
+apiVersion: hdfs.stackable.tech/v1alpha1
+kind: HdfsCluster
+metadata:
+  name: simple-hdfs
+spec:
+  image:
+    custom: "gitlab-registry.in2p3.fr/astrolabsoftware/fink/stackable-hadoop:v24.11.0"
+    productVersion: 3.3.6
+  clusterConfig:
+    zookeeperConfigMapName: simple-hdfs-znode
+    dfsReplication: 1
+  nameNodes:
+    config:
+      listenerClass: external-stable
+      resources:
+        cpu:
+          min: "0"
+        memory:
+          limit: "512Mi"
+    roleGroups:
+      default:
+        replicas: 2
+  dataNodes:
+    config:
+      listenerClass: external-unstable
+      # TODO set resources via helm values
+      resources:
+        cpu:
+          min: "0"
+        memory:
+          limit: "256Mi"
+    roleGroups:
+      default:
+        replicas: 1
+  journalNodes:
+    config:
+      resources:
+        cpu:
+          min: "0"
+        memory:
+          limit: "256Mi"
+    roleGroups:
+      default:
+        replicas: 1
