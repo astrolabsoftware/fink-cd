@@ -14,7 +14,7 @@ spec:
     path: chart/
     repoURL: https://github.com/astrolabsoftware/fink-broker.git
     # TODO use fink-broker hash
-    targetRevision: "{{ .Values.spec.source.targetRevision.finkalertsimulator }}"
+    targetRevision: "{{ .Values.spec.source.targetRevision.finkbroker }}"
     helm:
       releaseName: fink-broker
       valuesObject:
