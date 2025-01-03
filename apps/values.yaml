@@ -2,14 +2,15 @@ s3:
   enabled: false
   bucket: fink-broker-online
   endpoint: https://minio.minio:443
-stackable:
+hdfs:
   enabled: true
-  operators:
-    - zookeeper
-    - hdfs
-    - commons
-    - secret
-    - listener
+  stackable:
+    operators:
+      - zookeeper
+      - hdfs
+      - commons
+      - secret
+      - listener
 e2e:
   # Install applications required by fink for end-to-end testing:
   # minio-operator, minio-tenant, fink-alert-simulator

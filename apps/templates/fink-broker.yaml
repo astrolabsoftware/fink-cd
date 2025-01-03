@@ -23,7 +23,7 @@ spec:
         s3:
           bucket: "{{ .Values.s3.bucket }}"
           endpoint: "{{.Values.s3.endpoint }}"
-        {{- else if .Values.stackable.enabled }}
+        {{- else if .Values.hdfs.enabled }}
         storage: hdfs
         {{- end }}
   destination:

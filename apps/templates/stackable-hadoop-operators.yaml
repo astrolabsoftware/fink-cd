@@ -1,5 +1,5 @@
-{{ if and .Values.e2e.enabled .Values.stackable.enabled }}
-{{- range $.Values.stackable.operators }}
+{{ if and .Values.e2e.enabled .Values.hdfs.enabled }}
+{{- range $.Values.hdfs.stackable.operators }}
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
