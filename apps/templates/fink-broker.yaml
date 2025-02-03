@@ -29,7 +29,3 @@ spec:
   destination:
     server: {{ .Values.spec.destination.server }}
     namespace: {{ .Values.spec.sparkNamespace }}
-  syncPolicy:
-    syncOptions:
-    # - Replace=true
-    - CreateNamespace=true
