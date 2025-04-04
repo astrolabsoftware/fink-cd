@@ -13,7 +13,7 @@ spec:
   source:
     chart: strimzi-kafka-operator
     repoURL: quay.io/strimzi-helm
-    targetRevision: 0.35.1
+    targetRevision: 0.45.0
     helm:
       releaseName: strimzi
   destination:
