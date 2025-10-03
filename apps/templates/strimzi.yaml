@@ -21,6 +21,11 @@ spec:
     targetRevision: 0.48.0
     helm:
       releaseName: strimzi
+      values: |
+        resources:
+          limits:
+            memory: 2Gi
+            cpu: 1000m
   destination:
     server: {{ .Values.spec.destination.server }}
     namespace: kafka
