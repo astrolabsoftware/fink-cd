@@ -10,6 +10,11 @@ metadata:
     app.kubernetes.io/component: operator
 spec:
   project: default
+  ignoreDifferences:
+  - group: apiextensions.k8s.io
+    kind: CustomResourceDefinition
+    jqPathExpressions:
+    - .spec.versions[].deprecated | select(. == false)
   source:
     chart: strimzi-kafka-operator
     repoURL: quay.io/strimzi-helm
