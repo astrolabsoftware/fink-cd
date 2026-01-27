@@ -6,7 +6,8 @@ metadata:
   namespace: argocd
   labels:
     app.kubernetes.io/name: fink-alert-simulator
-    app.kubernetes.io/part-of: fink-ci
+    app.kubernetes.io/component: simulator
+    app.kubernetes.io/part-of: fink
   finalizers:
   - resources-finalizer.argocd.argoproj.io
 spec:

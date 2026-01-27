@@ -7,7 +7,7 @@ metadata:
   name: watchdog
   labels:
     app.kubernetes.io/name: kafka
-    app.kubernetes.io/part-of: fink-prereq
+    app.kubernetes.io/part-of: fink
     strimzi.io/cluster: "kafka-cluster"
 spec:
   partitions: 3

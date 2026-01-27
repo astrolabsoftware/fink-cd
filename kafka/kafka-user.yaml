@@ -4,7 +4,7 @@ metadata:
   name: fink-producer
   labels:
     app.kubernetes.io/name: kafka
-    app.kubernetes.io/part-of: fink-prereq
+    app.kubernetes.io/part-of: fink
     strimzi.io/cluster: "kafka-cluster"
 spec:
   authentication:
