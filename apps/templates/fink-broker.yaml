@@ -5,7 +5,8 @@ metadata:
   namespace: argocd
   labels:
     app.kubernetes.io/name: fink-broker
-    app.kubernetes.io/part-of: fink-core
+    app.kubernetes.io/component: broker
+    app.kubernetes.io/part-of: fink
   finalizers:
   - resources-finalizer.argocd.argoproj.io
 spec:
