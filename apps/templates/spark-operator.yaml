@@ -25,6 +25,11 @@ spec:
   destination:
     server: {{ .Values.spec.destination.server }}
     namespace: spark-operator
+  ignoreDifferences:
+    - group: apps
+      kind: Deployment
+      jsonPointers:
+        - /status/terminatingReplicas
   syncPolicy:
     syncOptions:
       - CreateNamespace=true
