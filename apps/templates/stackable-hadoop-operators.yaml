@@ -23,7 +23,7 @@ spec:
     - .spec.versions[].additionalPrinterColumns | select(. == [])
   source:
     chart: "{{ . }}-operator"
-    repoURL: https://repo.stackable.tech/repository/helm-stable/
+    repoURL: oci://oci.stackable.tech/sdp-charts
     targetRevision: 26.3.0
     helm:
       releaseName: "{{ . }}-operator"
