@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: stackable-oci-repo
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/hook: PreSync
+  labels:
+    argocd.argoproj.io/secret-type: repository
+stringData:
+  name: stackable-charts
+  url: oci://oci.stackable.tech/sdp-charts
+  type: helm
+  enableOCI: "true"
