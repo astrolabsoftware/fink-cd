@@ -21,6 +21,10 @@ spec:
     - .spec.names.categories | select(. == [])
     - .spec.names.shortNames | select(. == [])
     - .spec.versions[].additionalPrinterColumns | select(. == [])
+  - group: apps
+    kind: Deployment
+    jsonPointers:
+    - /status/terminatingReplicas
   source:
     chart: "{{ . }}-operator"
     repoURL: oci.stackable.tech/sdp-charts
