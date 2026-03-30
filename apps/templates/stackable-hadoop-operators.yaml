@@ -28,7 +28,7 @@ spec:
   source:
     chart: "{{ . }}-operator"
     repoURL: oci.stackable.tech/sdp-charts
-    targetRevision: 26.3.0
+    targetRevision: 24.11.0
     helm:
       releaseName: "{{ . }}-operator"
       valuesObject:
