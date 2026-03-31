@@ -11,6 +11,11 @@ metadata:
   - resources-finalizer.argocd.argoproj.io
 spec:
   project: default
+  ignoreDifferences:
+  - group: apps
+    kind: Deployment
+    jsonPointers:
+    - /status/terminatingReplicas
   source:
     chart: spark-operator
     repoURL: https://kubeflow.github.io/spark-operator
@@ -25,6 +30,11 @@ spec:
   destination:
     server: {{ .Values.spec.destination.server }}
     namespace: spark-operator
+  ignoreDifferences:
+    - group: apps
+      kind: Deployment
+      jsonPointers:
+        - /status/terminatingReplicas
   syncPolicy:
     syncOptions:
       - CreateNamespace=true

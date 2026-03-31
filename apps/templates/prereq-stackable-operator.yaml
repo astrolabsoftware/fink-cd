@@ -1,3 +1,12 @@
+# Requireb by sparkJobNamespaces
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: stackable-operators
+  annotations:
+    argocd.argoproj.io/hook: PreSync
+    pod-security.kubernetes.io/enforce: privileged
+---
 apiVersion: v1
 kind: Secret
 metadata:
