@@ -1,0 +1,3 @@
+# Storage capacity for HDFS nodes (nameNodes, dataNodes, journalNodes).
+# Leave empty to use the Stackable operator default.
+storageCapacity: ""

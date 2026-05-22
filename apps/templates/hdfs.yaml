@@ -16,9 +16,12 @@ spec:
     namespace: hdfs
   project: default
   source:
-    path: hdfs
+    path: charts/hdfs
     repoURL: {{ .Values.spec.source.repoURL }}
     targetRevision: {{ .Values.spec.source.targetRevision.default }}
+    helm:
+      valuesObject:
+        storageCapacity: "{{ .Values.hdfs.storageCapacity }}"
   syncPolicy:
     syncOptions:
       - CreateNamespace=true

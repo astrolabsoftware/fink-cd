@@ -1,4 +1,3 @@
----
 apiVersion: hdfs.stackable.tech/v1alpha1
 kind: HdfsCluster
 metadata:
@@ -18,18 +17,27 @@ spec:
           min: "0"
         memory:
           limit: "512Mi"
+        {{- if .Values.storageCapacity }}
+        storage:
+          data:
+            capacity: {{ .Values.storageCapacity }}
+        {{- end }}
     roleGroups:
       default:
         replicas: 2
   dataNodes:
     config:
       listenerClass: external-unstable
-      # TODO set resources via helm values
       resources:
         cpu:
           min: "0"
         memory:
           limit: "256Mi"
+        {{- if .Values.storageCapacity }}
+        storage:
+          data:
+            capacity: {{ .Values.storageCapacity }}
+        {{- end }}
     roleGroups:
       default:
         replicas: 1
@@ -40,6 +48,11 @@ spec:
           min: "0"
         memory:
           limit: "256Mi"
+        {{- if .Values.storageCapacity }}
+        storage:
+          data:
+            capacity: {{ .Values.storageCapacity }}
+        {{- end }}
     roleGroups:
       default:
         replicas: 1

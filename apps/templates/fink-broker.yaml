@@ -19,6 +19,16 @@ spec:
     helm:
       releaseName: fink-broker
       valuesObject:
+        {{- if or .Values.finkBroker.stream2raw.kafkaInSockets .Values.finkBroker.stream2raw.finkAlertSchema }}
+        stream2raw:
+          {{- if .Values.finkBroker.stream2raw.kafkaInSockets }}
+          kafka:
+            in_sockets: "{{ .Values.finkBroker.stream2raw.kafkaInSockets }}"
+          {{- end }}
+          {{- if .Values.finkBroker.stream2raw.finkAlertSchema }}
+          fink_alert_schema: "{{ .Values.finkBroker.stream2raw.finkAlertSchema }}"
+          {{- end }}
+        {{- end }}
         {{- if .Values.s3.enabled }}
         storage: s3
         s3:

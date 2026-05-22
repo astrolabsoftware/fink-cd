@@ -1,0 +1,7 @@
+hdfs:
+  storageCapacity: "20Gi"
+
+finkBroker:
+  stream2raw:
+    kafkaInSockets: "public.alerts.ztf.uw.edu:9092"
+    finkAlertSchema: "${HOME}/fink-alert-schemas/ztf/template_schema_ZTF_3p3.avro"

@@ -1,0 +1,2 @@
+# Storage size for Kafka persistent volumes.
+storageSize: "1Gi"

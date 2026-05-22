@@ -16,9 +16,12 @@ spec:
     namespace: kafka
   project: default
   source:
-    path: kafka
+    path: charts/kafka
     repoURL: {{ .Values.spec.source.repoURL }}
     targetRevision: {{ .Values.spec.source.targetRevision.default }}
+    helm:
+      valuesObject:
+        storageSize: "{{ .Values.kafka.storageSize }}"
   syncPolicy:
     syncOptions:
       - CreateNamespace=true

@@ -1,9 +1,16 @@
+finkBroker:
+  stream2raw:
+    kafkaInSockets: ""
+    finkAlertSchema: ""
 s3:
   enabled: false
   bucket: fink-broker-online
   endpoint: https://minio.minio:443
+kafka:
+  storageSize: "1Gi"
 hdfs:
   enabled: true
+  storageCapacity: ""
   stackable:
     operators:
       - zookeeper
