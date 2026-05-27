@@ -8,7 +8,7 @@ e2e:
 finkBroker:
   night: "20260526"
   logLevel: "INFO"
-e2e:
+  e2e:
     enabled: false
   image:
     repository: "gitlab-registry.in2p3.fr/astrolabsoftware/fink"
@@ -17,4 +17,4 @@ e2e:
   stream2raw:
     kafkaInSockets: "public.alerts.ztf.uw.edu:9092"
     finkAlertSchema: "/home/fink/fink-alert-schemas/ztf/template_schema_ZTF_3p3.avro"
-    topic: 'ztf_public_{{.Values.finkBroker.night}}'
+    topic: 'ztf_{{.Values.finkBroker.night}}.*'

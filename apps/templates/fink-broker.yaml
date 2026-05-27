@@ -43,19 +43,15 @@ spec:
           tag: "{{ .Values.finkBroker.image.tag }}"
           {{- end }}
         {{- end }}
-        {{- if or .Values.finkBroker.stream2raw.kafkaInSockets .Values.finkBroker.stream2raw.finkAlertSchema .Values.finkBroker.stream2raw.topic }}
         stream2raw:
-          {{- if .Values.finkBroker.stream2raw.kafkaInSockets }}
           kafka:
-            in_sockets: "{{ .Values.finkBroker.stream2raw.kafkaInSockets }}"
-            {{- if .Values.finkBroker.stream2raw.topic }}
             topic: "{{ tpl .Values.finkBroker.stream2raw.topic . }}"
+            {{- if .Values.finkBroker.stream2raw.kafkaInSockets }}
+            in_sockets: "{{ .Values.finkBroker.stream2raw.kafkaInSockets }}"
             {{- end }}
-          {{- end }}
           {{- if .Values.finkBroker.stream2raw.finkAlertSchema }}
           fink_alert_schema: "{{ .Values.finkBroker.stream2raw.finkAlertSchema }}"
           {{- end }}
-        {{- end }}
         {{- if .Values.finkBroker.raw2science.cores }}
         raw2science:
           cores: "{{ .Values.finkBroker.raw2science.cores }}"

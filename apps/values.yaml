@@ -12,7 +12,7 @@ finkBroker:
   stream2raw:
     kafkaInSockets: ""
     finkAlertSchema: ""
-    topic: ""
+    topic: 'ztf_public_{{.Values.finkBroker.night}}'
   raw2science:
     cores: ""
     coreRequest: ""
