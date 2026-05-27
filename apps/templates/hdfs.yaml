@@ -1,4 +1,4 @@
-{{ if and .Values.e2e.enabled .Values.hdfs.enabled }}
+{{ if and .Values.e2e.enabled (eq .Values.storage "hdfs") }}
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:

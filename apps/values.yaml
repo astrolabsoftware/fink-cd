@@ -1,16 +1,37 @@
 finkBroker:
+  night: "20200101"
+  logLevel: "DEBUG"
+  e2e:
+    enabled: true
+  monitoring:
+    enabled: false
+  image:
+    repository: ""
+    tag: ""
+    name: "fink-broker"
   stream2raw:
     kafkaInSockets: ""
     finkAlertSchema: ""
+    topic: ""
+  raw2science:
+    cores: ""
+    coreRequest: ""
+    memory: ""
+    instances: ""
+  distribution:
+    memory: ""
+finkAlertSimulator:
+  image:
+    tag: ""
+storage: "hdfs"
 s3:
-  enabled: false
   bucket: fink-broker-online
   endpoint: https://minio.minio:443
 kafka:
   storageSize: "1Gi"
 hdfs:
-  enabled: true
   storageCapacity: ""
+  onlineDataPrefix: "hdfs://simple-hdfs-namenode-default-0.simple-hdfs-namenode-default.hdfs:8020///user/185"
   stackable:
     operators:
       - zookeeper

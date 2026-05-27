@@ -19,23 +19,52 @@ spec:
     helm:
       releaseName: fink-broker
       valuesObject:
-        {{- if or .Values.finkBroker.stream2raw.kafkaInSockets .Values.finkBroker.stream2raw.finkAlertSchema }}
+        night: "{{ .Values.finkBroker.night }}"
+        log_level: "{{ .Values.finkBroker.logLevel }}"
+        {{- if eq .Values.storage "s3" }}
+        storage: s3
+        s3:
+          bucket: "{{ .Values.s3.bucket }}"
+          endpoint: "{{ .Values.s3.endpoint }}"
+        {{- else if eq .Values.storage "hdfs" }}
+        storage: hdfs
+        online_data_prefix: "{{ .Values.hdfs.onlineDataPrefix }}"
+        {{- end }}
+e2e:
+          enabled: {{ .Values.finkBroker.e2e.enabled }}
+        monitoring:
+          enabled: {{ .Values.finkBroker.monitoring.enabled }}
+        {{- if .Values.finkBroker.image.repository }}
+        image:
+          repository: "{{ .Values.finkBroker.image.repository }}"
+          name: "{{ .Values.finkBroker.image.name }}"
+          {{- if .Values.finkBroker.image.tag }}
+          tag: "{{ .Values.finkBroker.image.tag }}"
+          {{- end }}
+        {{- end }}
+        {{- if or .Values.finkBroker.stream2raw.kafkaInSockets .Values.finkBroker.stream2raw.finkAlertSchema .Values.finkBroker.stream2raw.topic }}
         stream2raw:
           {{- if .Values.finkBroker.stream2raw.kafkaInSockets }}
           kafka:
             in_sockets: "{{ .Values.finkBroker.stream2raw.kafkaInSockets }}"
+            {{- if .Values.finkBroker.stream2raw.topic }}
+            topic: "{{ tpl .Values.finkBroker.stream2raw.topic . }}"
+            {{- end }}
           {{- end }}
           {{- if .Values.finkBroker.stream2raw.finkAlertSchema }}
           fink_alert_schema: "{{ .Values.finkBroker.stream2raw.finkAlertSchema }}"
           {{- end }}
         {{- end }}
-        {{- if .Values.s3.enabled }}
-        storage: s3
-        s3:
-          bucket: "{{ .Values.s3.bucket }}"
-          endpoint: "{{.Values.s3.endpoint }}"
-        {{- else if .Values.hdfs.enabled }}
-        storage: hdfs
+        {{- if .Values.finkBroker.raw2science.cores }}
+        raw2science:
+          cores: "{{ .Values.finkBroker.raw2science.cores }}"
+          coreRequest: "{{ .Values.finkBroker.raw2science.coreRequest }}"
+          memory: "{{ .Values.finkBroker.raw2science.memory }}"
+          instances: "{{ .Values.finkBroker.raw2science.instances }}"
+        {{- end }}
+        {{- if .Values.finkBroker.distribution.memory }}
+        distribution:
+          memory: "{{ .Values.finkBroker.distribution.memory }}"
         {{- end }}
   destination:
     server: {{ .Values.spec.destination.server }}

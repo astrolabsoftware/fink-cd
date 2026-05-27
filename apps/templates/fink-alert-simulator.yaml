@@ -18,6 +18,11 @@ spec:
     targetRevision: "{{ .Values.spec.source.targetRevision.finkalertsimulator }}"
     helm:
       releaseName: fink-alert-simulator
+      {{- if .Values.finkAlertSimulator.image.tag }}
+      valuesObject:
+        image:
+          tag: "{{ .Values.finkAlertSimulator.image.tag }}"
+      {{- end }}
   destination:
     server: {{ .Values.spec.destination.server }}
     namespace: {{ .Values.spec.sparkNamespace }}
