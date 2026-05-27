@@ -30,7 +30,7 @@ spec:
         storage: hdfs
         online_data_prefix: "{{ .Values.hdfs.onlineDataPrefix }}"
         {{- end }}
-e2e:
+        e2e:
           enabled: {{ .Values.finkBroker.e2e.enabled }}
         monitoring:
           enabled: {{ .Values.finkBroker.monitoring.enabled }}
