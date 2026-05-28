@@ -1,9 +1,11 @@
 hdfs:
   storageCapacity: "20Gi"
 
-# In production, kafka/hdfs/minio are external: disable e2e infra
-e2e:
-  enabled: false
+components:
+  kafka: true           # Local kafka for fink distribution output
+  hdfs: true            # Local HDFS
+  alertSimulator: false # Production: no alert simulator
+  minio: false
 
 finkBroker:
   night: "20260526"
@@ -12,7 +14,7 @@ finkBroker:
     enabled: false
   image:
     repository: "gitlab-registry.in2p3.fr/astrolabsoftware/fink"
-    name: "fink-broker"
+    name: "fink-broker-noscience"
     # tag is set dynamically at deploy time via: argocd app set fink -p finkBroker.image.tag=<tag>
   stream2raw:
     kafkaInSockets: "public.alerts.ztf.uw.edu:9092"

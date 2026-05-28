@@ -39,11 +39,11 @@ hdfs:
       - commons
       - secret
       - listener
-e2e:
-  # Install applications required by fink for end-to-end testing:
-  # minio-operator, minio-tenant, fink-alert-simulator
-  # strimzi, kafka-cluster
-  enabled: true
+components:
+  kafka: true
+  hdfs: true
+  alertSimulator: true
+  minio: false
 spec:
   destination:
     server: https://kubernetes.default.svc

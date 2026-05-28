@@ -1,6 +1,4 @@
 finkBroker:
-  image:
-    name: "fink-broker"
   raw2science:
     cores: "2"
     coreRequest: "0"

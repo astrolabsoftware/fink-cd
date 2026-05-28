@@ -1,4 +1,4 @@
-{{ if and .Values.e2e.enabled (eq .Values.storage "hdfs") }}
+{{ if and .Values.components.hdfs (eq .Values.storage "hdfs") }}
 {{- range $.Values.hdfs.stackable.operators }}
 apiVersion: argoproj.io/v1alpha1
 kind: Application

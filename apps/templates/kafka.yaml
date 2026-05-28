@@ -1,4 +1,4 @@
-{{ if .Values.e2e.enabled }}
+{{ if .Values.components.kafka }}
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
