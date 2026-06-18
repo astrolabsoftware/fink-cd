@@ -13,7 +13,8 @@ finkBroker:
   e2e:
     enabled: false
   image:
-    repository: "gitlab-registry.in2p3.fr/astrolabsoftware/fink"
+    # repository defaults to the fink-broker chart value
+    # (gitlab-registry.in2p3.fr/astrolabsoftware/fink)
     name: "fink-broker-noscience"
     # tag is set dynamically at deploy time via: argocd app set fink -p finkBroker.image.tag=<tag>
   stream2raw:

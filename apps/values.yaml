@@ -5,10 +5,11 @@ finkBroker:
     enabled: true
   monitoring:
     enabled: false
+  # Image repository/name default to the fink-broker chart values.
+  # Override here only when needed (e.g. name for the noscience variant).
+  # In CI, repository/tag are injected via `argocd app set -p`.
   image:
-    repository: ""
     tag: ""
-    name: "fink-broker"
   stream2raw:
     kafkaInSockets: ""
     finkAlertSchema: ""

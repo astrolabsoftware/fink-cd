@@ -35,12 +35,16 @@ spec:
           enabled: {{ .Values.finkBroker.e2e.enabled }}
         monitoring:
           enabled: {{ .Values.finkBroker.monitoring.enabled }}
-        {{- if .Values.finkBroker.image.repository }}
+        {{- if or .Values.finkBroker.image.repository .Values.finkBroker.image.name .Values.finkBroker.image.tag }}
         image:
-          repository: "{{ .Values.finkBroker.image.repository }}"
-          name: "{{ .Values.finkBroker.image.name }}"
-          {{- if .Values.finkBroker.image.tag }}
-          tag: "{{ .Values.finkBroker.image.tag }}"
+          {{- with .Values.finkBroker.image.repository }}
+          repository: "{{ . }}"
+          {{- end }}
+          {{- with .Values.finkBroker.image.name }}
+          name: "{{ . }}"
+          {{- end }}
+          {{- with .Values.finkBroker.image.tag }}
+          tag: "{{ . }}"
           {{- end }}
         {{- end }}
         stream2raw:
