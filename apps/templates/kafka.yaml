@@ -4,6 +4,9 @@ kind: Application
 metadata:
   name: kafka
   namespace: argocd
+  annotations:
+    # Storage CRs depend on operator CRDs (wave 0) and gate the broker (wave 2)
+    argocd.argoproj.io/sync-wave: "1"
   labels:
     app.kubernetes.io/name: kafka
     app.kubernetes.io/part-of: fink
@@ -23,6 +26,9 @@ spec:
       valuesObject:
         storageSize: "{{ .Values.kafka.storageSize }}"
   syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
     syncOptions:
       - CreateNamespace=true
       - ApplyOutOfSyncOnly=true

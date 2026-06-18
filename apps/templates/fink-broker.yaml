@@ -3,6 +3,10 @@ kind: Application
 metadata:
   name: fink-broker
   namespace: argocd
+  annotations:
+    # Deployed after storage (wave 1); synced manually so the Kafka secret
+    # (finkctl createsecrets) exists before the Spark jobs start
+    argocd.argoproj.io/sync-wave: "2"
   labels:
     app.kubernetes.io/name: fink-broker
     app.kubernetes.io/component: broker

@@ -4,6 +4,9 @@ kind: Application
 metadata:
   name: minio-operator
   namespace: argocd
+  annotations:
+    # Operators install CRDs and must be healthy before storage CRs (wave 1)
+    argocd.argoproj.io/sync-wave: "0"
   labels:
     app.kubernetes.io/name: minio-operator
     app.kubernetes.io/part-of: fink
@@ -22,6 +25,9 @@ spec:
     server: "https://kubernetes.default.svc"
     namespace: minio-operator
   syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
     syncOptions:
       - CreateNamespace=true
       - ApplyOutOfSyncOnly=true

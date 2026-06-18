@@ -4,6 +4,9 @@ kind: Application
 metadata:
   name: strimzi
   namespace: argocd
+  annotations:
+    # Operators install CRDs and must be healthy before storage CRs (wave 1)
+    argocd.argoproj.io/sync-wave: "0"
   labels:
     app.kubernetes.io/name: strimzi
     app.kubernetes.io/part-of: fink
@@ -20,6 +23,9 @@ spec:
     server: {{ .Values.spec.destination.server }}
     namespace: kafka
   syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
     syncOptions:
       - CreateNamespace=true
       - ApplyOutOfSyncOnly=true
