@@ -1,4 +1,4 @@
-{{ if and .Values.components.minio (eq .Values.storage "s3") }}
+{{ if eq .Values.storage "s3" }}
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:

@@ -40,11 +40,12 @@ hdfs:
       - commons
       - secret
       - listener
+# The storage backend (in-cluster HDFS or MinIO) is selected by `storage`
+# above: storage=hdfs deploys the Stackable HDFS stack, storage=s3 deploys
+# the MinIO operator + tenant. `components` only toggles the optional add-ons.
 components:
   kafka: true
-  hdfs: true
   alertSimulator: true
-  minio: false
 spec:
   destination:
     server: https://kubernetes.default.svc

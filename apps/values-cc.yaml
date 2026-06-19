@@ -1,11 +1,10 @@
 hdfs:
   storageCapacity: "20Gi"
 
+# storage defaults to hdfs (see apps/values.yaml) -> in-cluster HDFS stack.
 components:
   kafka: true           # Local kafka for fink distribution output
-  hdfs: true            # Local HDFS
   alertSimulator: false # Production: no alert simulator
-  minio: false
 
 finkBroker:
   night: "20260526"
