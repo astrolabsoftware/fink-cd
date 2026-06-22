@@ -1,3 +1,26 @@
-# Storage capacity for HDFS nodes (nameNodes, dataNodes, journalNodes).
-# Leave empty to use the Stackable operator default.
-storageCapacity: ""
+# HDFS cluster sizing and storage, consumed by templates/hdfscluster.yaml.
+
+# Replication factor: number of copies of each HDFS block spread across
+# datanodes. Must be <= dataNode.replicas.
+dfsReplication: 1
+
+nameNode:
+  # HA namenodes (active/standby).
+  replicas: 2
+  memoryLimit: "512Mi"
+  # Disk for fsimage/edits metadata. Empty -> Stackable operator default.
+  storageCapacity: ""
+
+dataNode:
+  # Block storage workers. Increase for capacity and/or redundancy.
+  replicas: 1
+  memoryLimit: "256Mi"
+  # Disk for HDFS block data. Empty -> Stackable operator default.
+  storageCapacity: ""
+
+journalNode:
+  # Shared edits journal for namenode HA.
+  replicas: 1
+  memoryLimit: "256Mi"
+  # Disk for the edits journal. Empty -> Stackable operator default.
+  storageCapacity: ""

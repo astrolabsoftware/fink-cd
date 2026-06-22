@@ -1,5 +1,20 @@
 hdfs:
-  storageCapacity: "20Gi"
+  # Host a ~20GB dataset with redundancy. Replication 2 across 3 datanodes:
+  #   usable ~= 3 x 20Gi / 2 = ~30GB raw-equivalent (comfortable headroom for
+  #   20GB), and the cluster survives the loss of one datanode.
+  dfsReplication: 2
+  dataNode:
+    replicas: 3
+    storageCapacity: "20Gi"
+  # Metadata roles need little disk; size them small instead of inheriting
+  # the (large) datanode capacity.
+  nameNode:
+    storageCapacity: "5Gi"
+  # 3 journalnodes form a quorum so the namenode-HA edits journal is no
+  # longer a single point of failure (tolerates 1 journalnode down).
+  journalNode:
+    replicas: 3
+    storageCapacity: "2Gi"
 
 # storage defaults to hdfs (see apps/values.yaml) -> in-cluster HDFS stack.
 components:
@@ -7,10 +22,9 @@ components:
   alertSimulator: false # Production: no alert simulator
 
 finkBroker:
-  night: "20260526"
-  logLevel: "INFO"
+  logLevel: "DEBUG"
   e2e:
-    enabled: false
+    enabled: false 
   image:
     # repository defaults to the fink-broker chart value
     # (gitlab-registry.in2p3.fr/astrolabsoftware/fink)

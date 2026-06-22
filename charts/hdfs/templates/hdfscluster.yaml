@@ -8,7 +8,7 @@ spec:
     productVersion: 3.3.6
   clusterConfig:
     zookeeperConfigMapName: simple-hdfs-znode
-    dfsReplication: 1
+    dfsReplication: {{ .Values.dfsReplication }}
   nameNodes:
     config:
       listenerClass: external-stable
@@ -16,15 +16,15 @@ spec:
         cpu:
           min: "0"
         memory:
-          limit: "512Mi"
-        {{- if .Values.storageCapacity }}
+          limit: "{{ .Values.nameNode.memoryLimit }}"
+        {{- if .Values.nameNode.storageCapacity }}
         storage:
           data:
-            capacity: {{ .Values.storageCapacity }}
+            capacity: {{ .Values.nameNode.storageCapacity }}
         {{- end }}
     roleGroups:
       default:
-        replicas: 2
+        replicas: {{ .Values.nameNode.replicas }}
   dataNodes:
     config:
       listenerClass: external-unstable
@@ -32,27 +32,27 @@ spec:
         cpu:
           min: "0"
         memory:
-          limit: "256Mi"
-        {{- if .Values.storageCapacity }}
+          limit: "{{ .Values.dataNode.memoryLimit }}"
+        {{- if .Values.dataNode.storageCapacity }}
         storage:
           data:
-            capacity: {{ .Values.storageCapacity }}
+            capacity: {{ .Values.dataNode.storageCapacity }}
         {{- end }}
     roleGroups:
       default:
-        replicas: 1
+        replicas: {{ .Values.dataNode.replicas }}
   journalNodes:
     config:
       resources:
         cpu:
           min: "0"
         memory:
-          limit: "256Mi"
-        {{- if .Values.storageCapacity }}
+          limit: "{{ .Values.journalNode.memoryLimit }}"
+        {{- if .Values.journalNode.storageCapacity }}
         storage:
           data:
-            capacity: {{ .Values.storageCapacity }}
+            capacity: {{ .Values.journalNode.storageCapacity }}
         {{- end }}
     roleGroups:
       default:
-        replicas: 1
+        replicas: {{ .Values.journalNode.replicas }}
