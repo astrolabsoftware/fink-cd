@@ -60,6 +60,9 @@ spec:
           {{- if .Values.finkBroker.stream2raw.finkAlertSchema }}
           fink_alert_schema: "{{ .Values.finkBroker.stream2raw.finkAlertSchema }}"
           {{- end }}
+          {{- if .Values.finkBroker.stream2raw.memory }}
+          memory: "{{ .Values.finkBroker.stream2raw.memory }}"
+          {{- end }}
         {{- if .Values.finkBroker.raw2science.cores }}
         raw2science:
           cores: "{{ .Values.finkBroker.raw2science.cores }}"

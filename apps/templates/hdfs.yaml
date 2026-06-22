@@ -25,6 +25,22 @@ spec:
     helm:
       valuesObject:
         storageCapacity: "{{ .Values.hdfs.storageCapacity }}"
+        {{- if .Values.hdfs.dfsReplication }}
+        dfsReplication: {{ .Values.hdfs.dfsReplication }}
+        {{- end }}
+        {{- if or .Values.hdfs.dataNode.replicas .Values.hdfs.dataNode.memoryLimit }}
+        dataNode:
+          {{- if .Values.hdfs.dataNode.replicas }}
+          replicas: {{ .Values.hdfs.dataNode.replicas }}
+          {{- end }}
+          {{- if .Values.hdfs.dataNode.memoryLimit }}
+          memoryLimit: "{{ .Values.hdfs.dataNode.memoryLimit }}"
+          {{- end }}
+        {{- end }}
+        {{- if .Values.hdfs.nameNode.memoryLimit }}
+        nameNode:
+          memoryLimit: "{{ .Values.hdfs.nameNode.memoryLimit }}"
+        {{- end }}
   syncPolicy:
     automated:
       prune: true

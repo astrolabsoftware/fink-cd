@@ -14,6 +14,8 @@ finkBroker:
     kafkaInSockets: ""
     finkAlertSchema: ""
     topic: 'ztf_public_{{.Values.finkBroker.night}}'
+    # Executor/driver memory for stream2raw. Empty -> fink-broker chart default.
+    memory: ""
   raw2science:
     cores: ""
     coreRequest: ""
@@ -32,6 +34,13 @@ kafka:
   storageSize: "1Gi"
 hdfs:
   storageCapacity: ""
+  # HDFS robustness knobs. Empty -> charts/hdfs default (single datanode, repl 1).
+  dfsReplication: ""
+  dataNode:
+    replicas: ""
+    memoryLimit: ""
+  nameNode:
+    memoryLimit: ""
   onlineDataPrefix: "hdfs://simple-hdfs-namenode-default-0.simple-hdfs-namenode-default.hdfs:8020///user/185"
   stackable:
     operators:
