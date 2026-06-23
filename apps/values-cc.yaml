@@ -34,3 +34,7 @@ finkBroker:
     kafkaInSockets: "public.alerts.ztf.uw.edu:9092"
     finkAlertSchema: "/home/fink/fink-alert-schemas/ztf/template_schema_ZTF_3p3.avro"
     topic: 'ztf_{{.Values.finkBroker.night}}.*'
+    # ZTF executors OOMKilled (exit 137) at the 1000m default (~1400Mi limit);
+    # bump to 2000m (~2400Mi limit). Nodes have ~3.4GB allocatable, so this is
+    # close to the ceiling — revisit with larger nodes if OOM persists.
+    memory: "2000m"
