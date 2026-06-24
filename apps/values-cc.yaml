@@ -16,6 +16,12 @@ hdfs:
     replicas: 3
     storageCapacity: "2Gi"
 
+kafka:
+  # The 1Gi default (apps/values.yaml, used by CI) fills in minutes under a
+  # real alert stream and crashloops the broker on "No space left on device"
+  # (KRaft can't write __cluster_metadata/quorum-state). Size for preprod.
+  storageSize: "50Gi"
+
 # storage defaults to hdfs (see apps/values.yaml) -> in-cluster HDFS stack.
 components:
   kafka: true           # Local kafka for fink distribution output
