@@ -44,10 +44,14 @@ finkBroker:
   # (1400Mi limit). The fink-cd template only emits the raw2science block when
   # cores is set, so all four keys must be given together to tune its memory.
   # Values aligned with apps/values-ci-science.yaml.
+  # Julien (VirtualData) runs raw2science at ~2GB per core (8 cores @ 2GB =
+  # 16GB). Our m1.large nodes (~7.6GB allocatable) cannot host a single 16GB
+  # executor, so scale horizontally: 2GB/core with 2 cores (memory 4000m ->
+  # 5600Mi pod limit, fits a node) x4 instances = 8 cores / 16GB aggregated.
   raw2science:
     cores: "2"
     coreRequest: "0"
-    memory: "3000m"     # pod limit ~4200Mi
-    instances: "2"
+    memory: "4000m"     # ~2GB/core, pod limit ~5600Mi
+    instances: "4"
   distribution:
     memory: "2000m"     # pod limit ~2800Mi
