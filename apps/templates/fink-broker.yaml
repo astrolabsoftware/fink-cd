@@ -72,19 +72,15 @@ spec:
           {{- with .Values.finkBroker.stream2raw.instances }}
           instances: "{{ . }}"
           {{- end }}
-        {{- if or .Values.finkBroker.raw2science.cores .Values.finkBroker.raw2science.coreRequest .Values.finkBroker.raw2science.memory .Values.finkBroker.raw2science.instances }}
+        {{- if or .Values.finkBroker.raw2science.driver .Values.finkBroker.raw2science.executor }}
         raw2science:
-          {{- with .Values.finkBroker.raw2science.cores }}
-          cores: "{{ . }}"
+          {{- with .Values.finkBroker.raw2science.driver }}
+          driver:
+            {{- toYaml . | nindent 12 }}
           {{- end }}
-          {{- with .Values.finkBroker.raw2science.coreRequest }}
-          coreRequest: "{{ . }}"
-          {{- end }}
-          {{- with .Values.finkBroker.raw2science.memory }}
-          memory: "{{ . }}"
-          {{- end }}
-          {{- with .Values.finkBroker.raw2science.instances }}
-          instances: "{{ . }}"
+          {{- with .Values.finkBroker.raw2science.executor }}
+          executor:
+            {{- toYaml . | nindent 12 }}
           {{- end }}
         {{- end }}
         {{- if or .Values.finkBroker.distribution.cores .Values.finkBroker.distribution.coreRequest .Values.finkBroker.distribution.memory .Values.finkBroker.distribution.instances }}

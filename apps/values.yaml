@@ -20,11 +20,13 @@ finkBroker:
     coreRequest: ""
     memory: ""
     instances: ""
+  # raw2science driver and executor are sized/placed independently (the executor
+  # can be pinned to a dedicated node pool). Configured per environment in
+  # values-cc.yaml / values-ci-science.yaml; empty here -> fink-broker chart
+  # defaults.
   raw2science:
-    cores: ""
-    coreRequest: ""
-    memory: ""
-    instances: ""
+    driver: {}
+    executor: {}
   distribution:
     cores: ""
     coreRequest: ""

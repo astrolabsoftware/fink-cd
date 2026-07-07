@@ -1,8 +1,12 @@
 finkBroker:
   raw2science:
-    cores: "2"
-    coreRequest: "0"
-    memory: "3000m"
-    instances: "2"
+    driver:
+      cores: "2"
+      memory: "3000m"
+    executor:
+      cores: "2"
+      coreRequest: "0"
+      memory: "3000m"
+      instances: "2"
   distribution:
     memory: "2000m"

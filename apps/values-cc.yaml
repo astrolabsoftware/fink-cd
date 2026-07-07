@@ -40,18 +40,27 @@ finkBroker:
     # 1400Mi, 2000m -> 2800Mi). Nodes (m1.large) have ~7.6GB allocatable, so
     # there is ample headroom to raise these if OOM persists.
     memory: "2000m"
-  # raw2science is the science-heavy stage and OOMKilled at the 1000m default
-  # (1400Mi limit). The fink-cd template only emits the raw2science block when
-  # cores is set, so all four keys must be given together to tune its memory.
-  # Values aligned with apps/values-ci-science.yaml.
-  # Julien (VirtualData) runs raw2science at ~2GB per core (8 cores @ 2GB =
-  # 16GB). Our m1.large nodes (~7.6GB allocatable) cannot host a single 16GB
-  # executor, so scale horizontally: 2GB/core with 2 cores (memory 4000m ->
-  # 5600Mi pod limit, fits a node) x4 instances = 8 cores / 16GB aggregated.
+  # raw2science is the science-heavy stage; Julien (VirtualData) runs it at
+  # ~2GB/core (8 cores @ 2GB = 16GB executor). A 16GB executor does not fit our
+  # m1.large workers, so it runs on the dedicated big-worker pool
+  # (fink.m2.xlarge.1, 32GB) provisioned in talos_on_openstack: pinned there via
+  # nodeSelector + toleration. The driver stays small on the general pool (a
+  # 16GB driver + 16GB executor would not fit on a single 32GB node).
   raw2science:
-    cores: "2"
-    coreRequest: "0"
-    memory: "4000m"     # ~2GB/core, pod limit ~5600Mi
-    instances: "4"
+    driver:
+      cores: "1"
+      memory: "3000m"
+    executor:
+      cores: "8"
+      coreRequest: "0"
+      memory: "16000m"    # 8 x ~2GB/core, pod limit ~22.4Gi (fits a 32GB node)
+      instances: "1"
+      nodeSelector:
+        fink.io/pool: raw2science
+      tolerations:
+        - key: dedicated
+          operator: Equal
+          value: raw2science
+          effect: NoSchedule
   distribution:
     memory: "2000m"     # pod limit ~2800Mi
