@@ -10,19 +10,26 @@ finkBroker:
   # In CI, repository/tag are injected via `argocd app set -p`.
   image:
     tag: ""
+  # cores/coreRequest/memory/instances: empty -> fink-broker chart default
+  # (which itself defaults to the global cores/coreRequest/instances/memory).
   stream2raw:
     kafkaInSockets: ""
     finkAlertSchema: ""
     topic: 'ztf_public_{{.Values.finkBroker.night}}'
-    # Executor/driver memory for stream2raw. Empty -> fink-broker chart default.
+    cores: ""
+    coreRequest: ""
     memory: ""
+    instances: ""
   raw2science:
     cores: ""
     coreRequest: ""
     memory: ""
     instances: ""
   distribution:
+    cores: ""
+    coreRequest: ""
     memory: ""
+    instances: ""
 finkAlertSimulator:
   image:
     tag: ""
