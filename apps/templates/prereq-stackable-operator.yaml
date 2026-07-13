@@ -1,0 +1,24 @@
+# Requireb by sparkJobNamespaces
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: stackable-operators
+  annotations:
+    argocd.argoproj.io/hook: PreSync
+  labels:
+    pod-security.kubernetes.io/enforce: privileged
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: stackable-oci-repo
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/hook: PreSync
+  labels:
+    argocd.argoproj.io/secret-type: repository
+stringData:
+  name: stackable-charts
+  url: oci://oci.stackable.tech/sdp-charts
+  type: helm
+  enableOCI: "true"

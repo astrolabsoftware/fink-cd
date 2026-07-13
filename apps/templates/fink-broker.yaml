@@ -3,6 +3,10 @@ kind: Application
 metadata:
   name: fink-broker
   namespace: argocd
+  annotations:
+    # Deployed after storage (wave 1); synced manually so the Kafka secret
+    # (finkctl createsecrets) exists before the Spark jobs start
+    argocd.argoproj.io/sync-wave: "2"
   labels:
     app.kubernetes.io/name: fink-broker
     app.kubernetes.io/component: broker
@@ -19,13 +23,80 @@ spec:
     helm:
       releaseName: fink-broker
       valuesObject:
-        {{- if .Values.s3.enabled }}
+        night: "{{ .Values.finkBroker.night }}"
+        log_level: "{{ .Values.finkBroker.logLevel }}"
+        {{- if eq .Values.storage "s3" }}
         storage: s3
+        online_data_prefix: ""
         s3:
           bucket: "{{ .Values.s3.bucket }}"
-          endpoint: "{{.Values.s3.endpoint }}"
-        {{- else if .Values.hdfs.enabled }}
+          endpoint: "{{ .Values.s3.endpoint }}"
+        {{- else if eq .Values.storage "hdfs" }}
         storage: hdfs
+        online_data_prefix: "{{ .Values.hdfs.onlineDataPrefix }}"
+        {{- end }}
+        e2e:
+          enabled: {{ .Values.finkBroker.e2e.enabled }}
+        monitoring:
+          enabled: {{ .Values.finkBroker.monitoring.enabled }}
+        {{- if or .Values.finkBroker.image.repository .Values.finkBroker.image.name .Values.finkBroker.image.tag }}
+        image:
+          {{- with .Values.finkBroker.image.repository }}
+          repository: "{{ . }}"
+          {{- end }}
+          {{- with .Values.finkBroker.image.name }}
+          name: "{{ . }}"
+          {{- end }}
+          {{- with .Values.finkBroker.image.tag }}
+          tag: "{{ . }}"
+          {{- end }}
+        {{- end }}
+        stream2raw:
+          kafka:
+            topic: "{{ tpl .Values.finkBroker.stream2raw.topic . }}"
+            {{- if .Values.finkBroker.stream2raw.kafkaInSockets }}
+            in_sockets: "{{ .Values.finkBroker.stream2raw.kafkaInSockets }}"
+            {{- end }}
+          {{- if .Values.finkBroker.stream2raw.finkAlertSchema }}
+          fink_alert_schema: "{{ .Values.finkBroker.stream2raw.finkAlertSchema }}"
+          {{- end }}
+          {{- with .Values.finkBroker.stream2raw.cores }}
+          cores: "{{ . }}"
+          {{- end }}
+          {{- with .Values.finkBroker.stream2raw.coreRequest }}
+          coreRequest: "{{ . }}"
+          {{- end }}
+          {{- with .Values.finkBroker.stream2raw.memory }}
+          memory: "{{ . }}"
+          {{- end }}
+          {{- with .Values.finkBroker.stream2raw.instances }}
+          instances: "{{ . }}"
+          {{- end }}
+        {{- if or .Values.finkBroker.raw2science.driver .Values.finkBroker.raw2science.executor }}
+        raw2science:
+          {{- with .Values.finkBroker.raw2science.driver }}
+          driver:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.finkBroker.raw2science.executor }}
+          executor:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+        {{- end }}
+        {{- if or .Values.finkBroker.distribution.cores .Values.finkBroker.distribution.coreRequest .Values.finkBroker.distribution.memory .Values.finkBroker.distribution.instances }}
+        distribution:
+          {{- with .Values.finkBroker.distribution.cores }}
+          cores: "{{ . }}"
+          {{- end }}
+          {{- with .Values.finkBroker.distribution.coreRequest }}
+          coreRequest: "{{ . }}"
+          {{- end }}
+          {{- with .Values.finkBroker.distribution.memory }}
+          memory: "{{ . }}"
+          {{- end }}
+          {{- with .Values.finkBroker.distribution.instances }}
+          instances: "{{ . }}"
+          {{- end }}
         {{- end }}
   destination:
     server: {{ .Values.spec.destination.server }}

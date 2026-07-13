@@ -1,9 +1,12 @@
-{{ if .Values.e2e.enabled }}
+{{ if .Values.components.alertSimulator }}
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: fink-alert-simulator
   namespace: argocd
+  annotations:
+    # Application layer, deployed after storage (wave 1)
+    argocd.argoproj.io/sync-wave: "2"
   labels:
     app.kubernetes.io/name: fink-alert-simulator
     app.kubernetes.io/component: simulator
@@ -18,6 +21,11 @@ spec:
     targetRevision: "{{ .Values.spec.source.targetRevision.finkalertsimulator }}"
     helm:
       releaseName: fink-alert-simulator
+      {{- if .Values.finkAlertSimulator.image.tag }}
+      valuesObject:
+        image:
+          tag: "{{ .Values.finkAlertSimulator.image.tag }}"
+      {{- end }}
   destination:
     server: {{ .Values.spec.destination.server }}
     namespace: {{ .Values.spec.sparkNamespace }}

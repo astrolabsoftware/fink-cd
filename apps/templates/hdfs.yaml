@@ -1,9 +1,12 @@
-{{ if and .Values.e2e.enabled .Values.hdfs.enabled }}
+{{ if eq .Values.storage "hdfs" }}
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: hdfs
   namespace: argocd
+  annotations:
+    # Storage CRs depend on operator CRDs (wave 0) and gate the broker (wave 2)
+    argocd.argoproj.io/sync-wave: "1"
   labels:
     app.kubernetes.io/name: hdfs
     app.kubernetes.io/part-of: fink
@@ -16,10 +19,54 @@ spec:
     namespace: hdfs
   project: default
   source:
-    path: hdfs
+    path: charts/hdfs
     repoURL: {{ .Values.spec.source.repoURL }}
     targetRevision: {{ .Values.spec.source.targetRevision.default }}
+    helm:
+      valuesObject:
+        {{- if .Values.hdfs.dfsReplication }}
+        dfsReplication: {{ .Values.hdfs.dfsReplication }}
+        {{- end }}
+        {{- if or .Values.hdfs.nameNode.replicas .Values.hdfs.nameNode.memoryLimit .Values.hdfs.nameNode.storageCapacity }}
+        nameNode:
+          {{- if .Values.hdfs.nameNode.replicas }}
+          replicas: {{ .Values.hdfs.nameNode.replicas }}
+          {{- end }}
+          {{- if .Values.hdfs.nameNode.memoryLimit }}
+          memoryLimit: "{{ .Values.hdfs.nameNode.memoryLimit }}"
+          {{- end }}
+          {{- if .Values.hdfs.nameNode.storageCapacity }}
+          storageCapacity: "{{ .Values.hdfs.nameNode.storageCapacity }}"
+          {{- end }}
+        {{- end }}
+        {{- if or .Values.hdfs.dataNode.replicas .Values.hdfs.dataNode.memoryLimit .Values.hdfs.dataNode.storageCapacity }}
+        dataNode:
+          {{- if .Values.hdfs.dataNode.replicas }}
+          replicas: {{ .Values.hdfs.dataNode.replicas }}
+          {{- end }}
+          {{- if .Values.hdfs.dataNode.memoryLimit }}
+          memoryLimit: "{{ .Values.hdfs.dataNode.memoryLimit }}"
+          {{- end }}
+          {{- if .Values.hdfs.dataNode.storageCapacity }}
+          storageCapacity: "{{ .Values.hdfs.dataNode.storageCapacity }}"
+          {{- end }}
+        {{- end }}
+        {{- if or .Values.hdfs.journalNode.replicas .Values.hdfs.journalNode.memoryLimit .Values.hdfs.journalNode.storageCapacity }}
+        journalNode:
+          {{- if .Values.hdfs.journalNode.replicas }}
+          replicas: {{ .Values.hdfs.journalNode.replicas }}
+          {{- end }}
+          {{- if .Values.hdfs.journalNode.memoryLimit }}
+          memoryLimit: "{{ .Values.hdfs.journalNode.memoryLimit }}"
+          {{- end }}
+          {{- if .Values.hdfs.journalNode.storageCapacity }}
+          storageCapacity: "{{ .Values.hdfs.journalNode.storageCapacity }}"
+          {{- end }}
+        {{- end }}
   syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
     syncOptions:
       - CreateNamespace=true
       - ApplyOutOfSyncOnly=true

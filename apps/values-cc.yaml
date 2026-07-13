@@ -1,0 +1,66 @@
+hdfs:
+  # Host a ~20GB dataset with redundancy. Replication 2 across 3 datanodes:
+  #   usable ~= 3 x 20Gi / 2 = ~30GB raw-equivalent (comfortable headroom for
+  #   20GB), and the cluster survives the loss of one datanode.
+  dfsReplication: 2
+  dataNode:
+    replicas: 3
+    storageCapacity: "20Gi"
+  # Metadata roles need little disk; size them small instead of inheriting
+  # the (large) datanode capacity.
+  nameNode:
+    storageCapacity: "5Gi"
+  # 3 journalnodes form a quorum so the namenode-HA edits journal is no
+  # longer a single point of failure (tolerates 1 journalnode down).
+  journalNode:
+    replicas: 3
+    storageCapacity: "2Gi"
+
+kafka:
+  # The 1Gi default (apps/values.yaml, used by CI) fills in minutes under a
+  # real alert stream and crashloops the broker on "No space left on device"
+  # (KRaft can't write __cluster_metadata/quorum-state). Size for preprod.
+  storageSize: "50Gi"
+
+# storage defaults to hdfs (see apps/values.yaml) -> in-cluster HDFS stack.
+components:
+  kafka: true           # Local kafka for fink distribution output
+  alertSimulator: false # Production: no alert simulator
+
+finkBroker:
+  logLevel: "DEBUG"
+  e2e:
+    enabled: false
+  stream2raw:
+    kafkaInSockets: "public.alerts.ztf.uw.edu:9092"
+    finkAlertSchema: "/home/fink/fink-alert-schemas/ztf/template_schema_ZTF_3p3.avro"
+    topic: 'ztf_{{.Values.finkBroker.night}}.*'
+    # ZTF executors OOMKilled (exit 137) at the 1000m default. Spark applies a
+    # 0.4 memory-overhead factor, so the pod limit is memory x 1.4 (1000m ->
+    # 1400Mi, 2000m -> 2800Mi). Nodes (m1.large) have ~7.6GB allocatable, so
+    # there is ample headroom to raise these if OOM persists.
+    memory: "2000m"
+  # raw2science is the science-heavy stage; Julien (VirtualData) runs it at
+  # ~2GB/core (8 cores @ 2GB = 16GB executor). A 16GB executor does not fit our
+  # m1.large workers, so it runs on the dedicated big-worker pool
+  # (fink.m2.xlarge.1, 32GB) provisioned in talos_on_openstack: pinned there via
+  # nodeSelector + toleration. The driver stays small on the general pool (a
+  # 16GB driver + 16GB executor would not fit on a single 32GB node).
+  raw2science:
+    driver:
+      cores: "1"
+      memory: "3000m"
+    executor:
+      cores: "8"
+      coreRequest: "0"
+      memory: "16000m"    # 8 x ~2GB/core, pod limit ~22.4Gi (fits a 32GB node)
+      instances: "1"
+      nodeSelector:
+        fink.io/pool: raw2science
+      tolerations:
+        - key: dedicated
+          operator: Equal
+          value: raw2science
+          effect: NoSchedule
+  distribution:
+    memory: "2000m"     # pod limit ~2800Mi

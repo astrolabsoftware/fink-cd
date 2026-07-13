@@ -1,9 +1,12 @@
-{{ if and .Values.e2e.enabled .Values.s3.enabled }}
+{{ if eq .Values.storage "s3" }}
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: minio-tenant
   namespace: argocd
+  annotations:
+    # Storage CRs depend on operator CRDs (wave 0) and gate the broker (wave 2)
+    argocd.argoproj.io/sync-wave: "1"
   labels:
     app.kubernetes.io/name: minio-tenant
     app.kubernetes.io/part-of: fink
@@ -30,6 +33,9 @@ spec:
     server: "https://kubernetes.default.svc"
     namespace: minio
   syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
     syncOptions:
       - CreateNamespace=true
       - ApplyOutOfSyncOnly=true

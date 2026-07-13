@@ -1,9 +1,12 @@
-{{ if .Values.e2e.enabled }}
+{{ if .Values.components.kafka }}
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: kafka
   namespace: argocd
+  annotations:
+    # Storage CRs depend on operator CRDs (wave 0) and gate the broker (wave 2)
+    argocd.argoproj.io/sync-wave: "1"
   labels:
     app.kubernetes.io/name: kafka
     app.kubernetes.io/part-of: fink
@@ -16,10 +19,16 @@ spec:
     namespace: kafka
   project: default
   source:
-    path: kafka
+    path: charts/kafka
     repoURL: {{ .Values.spec.source.repoURL }}
     targetRevision: {{ .Values.spec.source.targetRevision.default }}
+    helm:
+      valuesObject:
+        storageSize: "{{ .Values.kafka.storageSize }}"
   syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
     syncOptions:
       - CreateNamespace=true
       - ApplyOutOfSyncOnly=true

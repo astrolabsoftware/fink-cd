@@ -1,0 +1,58 @@
+apiVersion: hdfs.stackable.tech/v1alpha1
+kind: HdfsCluster
+metadata:
+  name: simple-hdfs
+spec:
+  image:
+    custom: "gitlab-registry.in2p3.fr/astrolabsoftware/fink/stackable-hadoop:v24.11.0"
+    productVersion: 3.3.6
+  clusterConfig:
+    zookeeperConfigMapName: simple-hdfs-znode
+    dfsReplication: {{ .Values.dfsReplication }}
+  nameNodes:
+    config:
+      listenerClass: external-stable
+      resources:
+        cpu:
+          min: "0"
+        memory:
+          limit: "{{ .Values.nameNode.memoryLimit }}"
+        {{- if .Values.nameNode.storageCapacity }}
+        storage:
+          data:
+            capacity: {{ .Values.nameNode.storageCapacity }}
+        {{- end }}
+    roleGroups:
+      default:
+        replicas: {{ .Values.nameNode.replicas }}
+  dataNodes:
+    config:
+      listenerClass: external-unstable
+      resources:
+        cpu:
+          min: "0"
+        memory:
+          limit: "{{ .Values.dataNode.memoryLimit }}"
+        {{- if .Values.dataNode.storageCapacity }}
+        storage:
+          data:
+            capacity: {{ .Values.dataNode.storageCapacity }}
+        {{- end }}
+    roleGroups:
+      default:
+        replicas: {{ .Values.dataNode.replicas }}
+  journalNodes:
+    config:
+      resources:
+        cpu:
+          min: "0"
+        memory:
+          limit: "{{ .Values.journalNode.memoryLimit }}"
+        {{- if .Values.journalNode.storageCapacity }}
+        storage:
+          data:
+            capacity: {{ .Values.journalNode.storageCapacity }}
+        {{- end }}
+    roleGroups:
+      default:
+        replicas: {{ .Values.journalNode.replicas }}

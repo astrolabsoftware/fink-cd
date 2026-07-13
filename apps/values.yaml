@@ -1,9 +1,63 @@
+finkBroker:
+  night: "20200101"
+  logLevel: "DEBUG"
+  e2e:
+    enabled: true
+  monitoring:
+    enabled: false
+  # Image repository/name default to the fink-broker chart values.
+  # Override here only when needed (e.g. name for the noscience variant).
+  # In CI, repository/tag are injected via `argocd app set -p`.
+  image:
+    tag: ""
+  # cores/coreRequest/memory/instances: empty -> fink-broker chart default
+  # (which itself defaults to the global cores/coreRequest/instances/memory).
+  stream2raw:
+    kafkaInSockets: ""
+    finkAlertSchema: ""
+    topic: 'ztf_public_{{.Values.finkBroker.night}}'
+    cores: ""
+    coreRequest: ""
+    memory: ""
+    instances: ""
+  # raw2science driver and executor are sized/placed independently (the executor
+  # can be pinned to a dedicated node pool). Configured per environment in
+  # values-cc.yaml / values-ci-science.yaml; empty here -> fink-broker chart
+  # defaults.
+  raw2science:
+    driver: {}
+    executor: {}
+  distribution:
+    cores: ""
+    coreRequest: ""
+    memory: ""
+    instances: ""
+finkAlertSimulator:
+  image:
+    tag: ""
+storage: "hdfs"
 s3:
-  enabled: false
   bucket: fink-broker-online
   endpoint: https://minio.minio:443
+kafka:
+  storageSize: "1Gi"
 hdfs:
-  enabled: true
+  # HDFS robustness/capacity knobs. Empty -> charts/hdfs default
+  # (single datanode, repl 1, operator-default disk per role).
+  dfsReplication: ""
+  nameNode:
+    replicas: ""
+    memoryLimit: ""
+    storageCapacity: ""
+  dataNode:
+    replicas: ""
+    memoryLimit: ""
+    storageCapacity: ""
+  journalNode:
+    replicas: ""
+    memoryLimit: ""
+    storageCapacity: ""
+  onlineDataPrefix: "hdfs://simple-hdfs-namenode-default-0.simple-hdfs-namenode-default.hdfs:8020///user/185"
   stackable:
     operators:
       - zookeeper
@@ -11,11 +65,12 @@ hdfs:
       - commons
       - secret
       - listener
-e2e:
-  # Install applications required by fink for end-to-end testing:
-  # minio-operator, minio-tenant, fink-alert-simulator
-  # strimzi, kafka-cluster
-  enabled: true
+# The storage backend (in-cluster HDFS or MinIO) is selected by `storage`
+# above: storage=hdfs deploys the Stackable HDFS stack, storage=s3 deploys
+# the MinIO operator + tenant. `components` only toggles the optional add-ons.
+components:
+  kafka: true
+  alertSimulator: true
 spec:
   destination:
     server: https://kubernetes.default.svc

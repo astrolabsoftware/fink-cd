@@ -1,0 +1,3 @@
+finkBroker:
+  image:
+    name: "fink-broker-noscience"

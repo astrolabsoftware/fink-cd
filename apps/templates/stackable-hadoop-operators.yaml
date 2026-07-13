@@ -1,10 +1,13 @@
-{{ if and .Values.e2e.enabled .Values.hdfs.enabled }}
+{{ if eq .Values.storage "hdfs" }}
 {{- range $.Values.hdfs.stackable.operators }}
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: "{{ . }}-operator"
   namespace: argocd
+  annotations:
+    # Operators install CRDs and must be healthy before storage CRs (wave 1)
+    argocd.argoproj.io/sync-wave: "0"
   labels:
     app.kubernetes.io/name: "{{ . }}-operator"
     app.kubernetes.io/part-of: fink
@@ -21,9 +24,13 @@ spec:
     - .spec.names.categories | select(. == [])
     - .spec.names.shortNames | select(. == [])
     - .spec.versions[].additionalPrinterColumns | select(. == [])
+  - group: apps
+    kind: Deployment
+    jsonPointers:
+    - /status/terminatingReplicas
   source:
     chart: "{{ . }}-operator"
-    repoURL: https://repo.stackable.tech/repository/helm-stable/
+    repoURL: oci.stackable.tech/sdp-charts
     targetRevision: 24.11.0
     helm:
       releaseName: "{{ . }}-operator"
@@ -36,6 +43,9 @@ spec:
     server: "https://kubernetes.default.svc"
     namespace: stackable-operators
   syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
     syncOptions:
       - CreateNamespace=true
       - ServerSideApply=true
