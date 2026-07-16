@@ -1,5 +1,19 @@
 finkBroker:
   night: "20200101"
+  # One-shot by default (CI, backfill): three SparkApplications with a pinned
+  # night. The values-scheduled.yaml overlay flips this to 'scheduled' for the
+  # permanent daily run (ScheduledSparkApplications, night deduced at runtime).
+  run:
+    mode: oneoff
+  # Only consumed when run.mode=scheduled (forwarded to the fink-broker chart).
+  scheduled:
+    schedule: "0 12 * * *"
+    concurrencyPolicy: Forbid
+    successfulRunHistoryLimit: 3
+    failedRunHistoryLimit: 3
+    # Hours subtracted from UTC now to deduce the night: 24 -> previous complete
+    # ZTF night (n-1), 0 -> current/live. See the ZTF topic-rollover convention.
+    nightOffsetHours: 24
   logLevel: "DEBUG"
   e2e:
     enabled: true
