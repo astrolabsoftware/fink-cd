@@ -21,6 +21,22 @@ kafka:
   # real alert stream and crashloops the broker on "No space left on device"
   # (KRaft can't write __cluster_metadata/quorum-state). Size for preprod.
   storageSize: "50Gi"
+  jaas:
+    # Never run preprod on the CHANGEME default of apps/values.yaml: the
+    # 'external' listener is a nodeport with scram-sha-512. The two secrets are
+    # provisioned out of band instead (one-shot, they then persist), so no
+    # password ends up in git or in the Argo CD Application manifest:
+    #
+    #   PW=$(openssl rand -base64 24)
+    #   kubectl -n kafka create secret generic fink-producer-password \
+    #     --from-literal=password="$PW"
+    #   printf '// Configuration for secure kafka authentication\nKafkaClient {\n    org.apache.kafka.common.security.scram.ScramLoginModule required\n    username="fink-producer"\n    password="%s";\n};\n' "$PW" > /tmp/kafka-jaas.conf
+    #   kubectl -n spark create secret generic fink-kafka-jaas \
+    #     --from-file=kafka-jaas.conf=/tmp/kafka-jaas.conf && rm /tmp/kafka-jaas.conf
+    #
+    # If they are missing, the KafkaUser stays NotReady and the distribution
+    # executors stay in ContainerCreating -- a loud failure, by design.
+    create: false
 
 # storage defaults to hdfs (see apps/values.yaml) -> in-cluster HDFS stack.
 components:
