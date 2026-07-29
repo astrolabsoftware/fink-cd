@@ -9,8 +9,9 @@ metadata:
 spec:
   authentication:
     type: scram-sha-512
-    # Consume a password we own instead of letting Strimzi generate one, so the
-    # derived JAAS secret can be rendered declaratively (kafka-jaas-secret.yaml).
+    # Consume a password we own instead of letting Strimzi generate one: the
+    # same value is handed to the distribution SparkApplication as a JAAS
+    # config, and both secrets are provisioned together (see values.yaml).
     password:
       valueFrom:
         secretKeyRef:

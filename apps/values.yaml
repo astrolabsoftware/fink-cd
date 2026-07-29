@@ -55,17 +55,10 @@ s3:
   endpoint: https://minio.minio:443
 kafka:
   storageSize: "1Gi"
-  # SCRAM credentials for the fink-producer KafkaUser. The password is provided
-  # to Strimzi so the JAAS secret consumed by the distribution SparkApplication
-  # is a plain declarative resource (see charts/kafka).
-  jaas:
-    create: true
-    # Throwaway default, fine for CI clusters. The 'external' listener is a
-    # nodeport with scram-sha-512, so override this on any long-lived cluster
-    # (values-cc.yaml) -- or set create=false and provision both secrets out of
-    # band (sealed secrets) to keep the password out of git and out of the
-    # Application manifest.
-    password: "CHANGEME"
+  # The SCRAM credentials of the fink-producer KafkaUser are not configured
+  # here: they are provisioned in the cluster before this chart is deployed
+  # (fink-broker e2e/argocd.sh), so no password reaches git or the Argo CD
+  # Application manifest. See charts/kafka/values.yaml.
 hdfs:
   # HDFS robustness/capacity knobs. Empty -> charts/hdfs default
   # (single datanode, repl 1, operator-default disk per role).

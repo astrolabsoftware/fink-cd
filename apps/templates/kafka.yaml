@@ -25,12 +25,6 @@ spec:
     helm:
       valuesObject:
         storageSize: "{{ .Values.kafka.storageSize }}"
-        jaas:
-          create: {{ .Values.kafka.jaas.create }}
-          sparkNamespace: "{{ .Values.spec.sparkNamespace }}"
-          {{- if .Values.kafka.jaas.create }}
-          password: "{{ .Values.kafka.jaas.password }}"
-          {{- end }}
   syncPolicy:
     automated:
       prune: true
