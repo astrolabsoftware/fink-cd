@@ -19,6 +19,14 @@ finkBroker:
     enabled: true
   monitoring:
     enabled: false
+  # Daily CronJob printing what entered and what left the broker for each
+  # observing night (finkctl get balance). Only meaningful with
+  # run.mode=scheduled and storage=hdfs.
+  report:
+    enabled: false
+    image:
+      # Empty -> fink-broker chart default
+      tag: ""
   # Image repository/name default to the fink-broker chart values.
   # Override here only when needed (e.g. name for the noscience variant).
   # In CI, repository/tag are injected via `argocd app set -p`.

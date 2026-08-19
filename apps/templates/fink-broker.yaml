@@ -49,6 +49,12 @@ spec:
           enabled: {{ .Values.finkBroker.e2e.enabled }}
         monitoring:
           enabled: {{ .Values.finkBroker.monitoring.enabled }}
+        report:
+          enabled: {{ .Values.finkBroker.report.enabled }}
+          {{- with .Values.finkBroker.report.image.tag }}
+          image:
+            tag: "{{ . }}"
+          {{- end }}
         {{- if or .Values.finkBroker.image.repository .Values.finkBroker.image.name .Values.finkBroker.image.tag }}
         image:
           {{- with .Values.finkBroker.image.repository }}

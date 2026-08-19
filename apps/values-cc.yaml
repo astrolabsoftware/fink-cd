@@ -35,6 +35,11 @@ finkBroker:
   logLevel: "DEBUG"
   e2e:
     enabled: false
+  # Daily balance of the previous runs, printed to the CronJob logs. Requires
+  # the finkctl image to be published first (finkctl build.sh / push-image.sh),
+  # otherwise the pod stays in ImagePullBackOff.
+  report:
+    enabled: true
   stream2raw:
     kafkaInSockets: "public.alerts.ztf.uw.edu:9092"
     finkAlertSchema: "/home/fink/fink-alert-schemas/ztf/template_schema_ZTF_3p3.avro"
