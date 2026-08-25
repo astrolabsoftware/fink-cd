@@ -7,7 +7,7 @@ finkBroker:
     mode: oneoff
   # Only consumed when run.mode=scheduled (forwarded to the fink-broker chart).
   scheduled:
-    schedule: "0 12 * * *"
+    schedule: "0 9 * * *"
     concurrencyPolicy: Forbid
     successfulRunHistoryLimit: 3
     failedRunHistoryLimit: 3
