@@ -8,6 +8,13 @@ finkBroker:
   # Only consumed when run.mode=scheduled (forwarded to the fink-broker chart).
   scheduled:
     schedule: "0 9 * * *"
+    # Time of day (HH:MM, UTC) at which a run stops, on the day it started.
+    # Together with schedule it defines the whole run window, so both bounds
+    # stay visible side by side. An absolute deadline rather than a duration:
+    # it is recomputed identically by every restartPolicy attempt, so a
+    # restarted run aims at the same instant instead of granting itself a fresh
+    # window and overflowing into the next tick.
+    exitAt: "23:59"
     concurrencyPolicy: Forbid
     successfulRunHistoryLimit: 3
     failedRunHistoryLimit: 3
