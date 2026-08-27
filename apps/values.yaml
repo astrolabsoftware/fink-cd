@@ -36,6 +36,9 @@ finkBroker:
   # run.mode=scheduled and storage=hdfs.
   report:
     enabled: false
+    # Empty -> fink-broker chart default (a daily tick). CI overrides it to
+    # fire immediately, since a run lasts minutes, not a day.
+    schedule: ""
     image:
       # Empty -> fink-broker chart default
       tag: ""

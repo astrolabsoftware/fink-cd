@@ -51,6 +51,9 @@ spec:
           enabled: {{ .Values.finkBroker.monitoring.enabled }}
         report:
           enabled: {{ .Values.finkBroker.report.enabled }}
+          {{- with .Values.finkBroker.report.schedule }}
+          schedule: "{{ . }}"
+          {{- end }}
           {{- with .Values.finkBroker.report.image.tag }}
           image:
             tag: "{{ . }}"
