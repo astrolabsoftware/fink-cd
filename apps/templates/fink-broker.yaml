@@ -4,8 +4,9 @@ metadata:
   name: fink-broker
   namespace: argocd
   annotations:
-    # Deployed after storage (wave 1); synced manually so the Kafka secret
-    # (finkctl createsecrets) exists before the Spark jobs start
+    # Application layer, deployed after storage (wave 1). The Kafka SASL/JAAS
+    # secret is a declarative resource of the kafka chart (wave 1), so it
+    # exists by the time the Spark jobs start.
     argocd.argoproj.io/sync-wave: "2"
   labels:
     app.kubernetes.io/name: fink-broker
@@ -23,7 +24,16 @@ spec:
     helm:
       releaseName: fink-broker
       valuesObject:
+        {{- /* Scheduled mode deduces the night at runtime, so no frozen night is injected. */}}
+        {{- if ne .Values.finkBroker.run.mode "scheduled" }}
         night: "{{ .Values.finkBroker.night }}"
+        {{- end }}
+        run:
+          {{- toYaml .Values.finkBroker.run | nindent 10 }}
+        {{- if eq .Values.finkBroker.run.mode "scheduled" }}
+        scheduled:
+          {{- toYaml .Values.finkBroker.scheduled | nindent 10 }}
+        {{- end }}
         log_level: "{{ .Values.finkBroker.logLevel }}"
         {{- if eq .Values.storage "s3" }}
         storage: s3
@@ -39,6 +49,15 @@ spec:
           enabled: {{ .Values.finkBroker.e2e.enabled }}
         monitoring:
           enabled: {{ .Values.finkBroker.monitoring.enabled }}
+        report:
+          enabled: {{ .Values.finkBroker.report.enabled }}
+          {{- with .Values.finkBroker.report.schedule }}
+          schedule: "{{ . }}"
+          {{- end }}
+          {{- with .Values.finkBroker.report.image.tag }}
+          image:
+            tag: "{{ . }}"
+          {{- end }}
         {{- if or .Values.finkBroker.image.repository .Values.finkBroker.image.name .Values.finkBroker.image.tag }}
         image:
           {{- with .Values.finkBroker.image.repository }}
@@ -101,3 +120,15 @@ spec:
   destination:
     server: {{ .Values.spec.destination.server }}
     namespace: {{ .Values.spec.sparkNamespace }}
+  # Auto-synced like the operator/storage waves, so the parent app-of-apps can
+  # gate wave 2 on health (a created-but-unsynced child is never Healthy) and
+  # the whole rollout is driven by sync-waves alone. What is deployed stays
+  # pinned by spec.source.targetRevision: use an immutable tag in production
+  # (a branch makes the running pipeline follow its HEAD).
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ApplyOutOfSyncOnly=true

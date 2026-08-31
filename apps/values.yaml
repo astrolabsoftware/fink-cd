@@ -1,10 +1,47 @@
 finkBroker:
   night: "20200101"
+  # One-shot by default (CI, backfill): three SparkApplications with a pinned
+  # night. The values-scheduled.yaml overlay flips this to 'scheduled' for the
+  # permanent daily run (ScheduledSparkApplications, night deduced at runtime).
+  run:
+    mode: oneoff
+  # Only consumed when run.mode=scheduled (forwarded to the fink-broker chart).
+  # Every time in this block is UTC, never local time: the cron of a
+  # ScheduledSparkApplication is evaluated in UTC, and the jobs deduce their
+  # night from UTC too, so a local-time value would drift twice a year.
+  scheduled:
+    # Cron firing the three jobs together, UTC. Shared by all three so they
+    # agree on the same night (same side of the UTC boundary).
+    schedule: "0 9 * * *"
+    # Time of day (HH:MM, UTC) at which a run stops, on the day it started.
+    # Together with schedule it defines the whole run window, so both bounds
+    # stay visible side by side. An absolute deadline rather than a duration:
+    # it is recomputed identically by every restartPolicy attempt, so a
+    # restarted run aims at the same instant instead of granting itself a fresh
+    # window and overflowing into the next tick.
+    exitAt: "23:59"
+    concurrencyPolicy: Forbid
+    successfulRunHistoryLimit: 3
+    failedRunHistoryLimit: 3
+    # Hours subtracted from UTC now to deduce the night: 24 -> previous complete
+    # ZTF night (n-1), 0 -> current/live. See the ZTF topic-rollover convention.
+    nightOffsetHours: 24
   logLevel: "DEBUG"
   e2e:
     enabled: true
   monitoring:
     enabled: false
+  # Daily CronJob printing what entered and what left the broker for each
+  # observing night (finkctl get balance). Only meaningful with
+  # run.mode=scheduled and storage=hdfs.
+  report:
+    enabled: false
+    # Empty -> fink-broker chart default (a daily tick). CI overrides it to
+    # fire immediately, since a run lasts minutes, not a day.
+    schedule: ""
+    image:
+      # Empty -> fink-broker chart default
+      tag: ""
   # Image repository/name default to the fink-broker chart values.
   # Override here only when needed (e.g. name for the noscience variant).
   # In CI, repository/tag are injected via `argocd app set -p`.
@@ -41,6 +78,10 @@ s3:
   endpoint: https://minio.minio:443
 kafka:
   storageSize: "1Gi"
+  # The SCRAM credentials of the fink-producer KafkaUser are not configured
+  # here: they are provisioned in the cluster before this chart is deployed
+  # (fink-broker e2e/argocd.sh), so no password reaches git or the Argo CD
+  # Application manifest. See charts/kafka/values.yaml.
 hdfs:
   # HDFS robustness/capacity knobs. Empty -> charts/hdfs default
   # (single datanode, repl 1, operator-default disk per role).

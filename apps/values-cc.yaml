@@ -21,6 +21,10 @@ kafka:
   # real alert stream and crashloops the broker on "No space left on device"
   # (KRaft can't write __cluster_metadata/quorum-state). Size for preprod.
   storageSize: "50Gi"
+  # The SCRAM password is not set here (nor anywhere else in git): the
+  # 'external' listener is a nodeport with scram-sha-512, so preprod runs on a
+  # generated password. fink-broker e2e/argocd.sh creates it on the first
+  # deployment and reuses it afterwards; CI infras get a fixed throwaway one.
 
 # storage defaults to hdfs (see apps/values.yaml) -> in-cluster HDFS stack.
 components:
@@ -31,6 +35,11 @@ finkBroker:
   logLevel: "DEBUG"
   e2e:
     enabled: false
+  # Daily balance of the previous runs, printed to the CronJob logs. Requires
+  # the finkctl image to be published first (finkctl build.sh / push-image.sh),
+  # otherwise the pod stays in ImagePullBackOff.
+  report:
+    enabled: true
   stream2raw:
     kafkaInSockets: "public.alerts.ztf.uw.edu:9092"
     finkAlertSchema: "/home/fink/fink-alert-schemas/ztf/template_schema_ZTF_3p3.avro"
