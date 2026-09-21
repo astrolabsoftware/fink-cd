@@ -84,7 +84,14 @@ kafka:
   # No SCRAM credentials here: they are provisioned out of band before the
   # deployment, see charts/kafka/values.yaml.
 hdfs:
-  # HDFS robustness/capacity knobs. Empty -> charts/hdfs default
+  # false -> Stackable HDFS deployed in the cluster (operators + charts/hdfs),
+  #          sized by the knobs below.
+  # true  -> an HDFS outside the cluster: no operator nor HDFS cluster is
+  #          deployed, and the fink-broker chart skips what depends on the
+  #          in-cluster stack (user directory init, balance report).
+  # Either way the jobs write under onlineDataPrefix.
+  external: false
+  # In-cluster HDFS robustness/capacity knobs. Empty -> charts/hdfs default
   # (single datanode, repl 1, operator-default disk per role).
   dfsReplication: ""
   nameNode:
@@ -107,9 +114,10 @@ hdfs:
       - commons
       - secret
       - listener
-# The storage backend (in-cluster HDFS or MinIO) is selected by `storage`
-# above: storage=hdfs deploys the Stackable HDFS stack, storage=s3 deploys
-# the MinIO operator + tenant. `components` only toggles the optional add-ons.
+# The storage backend (HDFS or MinIO) is selected by `storage` above:
+# storage=hdfs deploys the Stackable HDFS stack unless hdfs.external is set,
+# storage=s3 deploys the MinIO operator + tenant. `components` only toggles the
+# optional add-ons.
 components:
   kafka: true
   alertSimulator: true

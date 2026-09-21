@@ -1,7 +1,9 @@
+{{ if and (eq .Values.storage "hdfs") (not .Values.hdfs.external) }}
 # Namespace of the Stackable operators, including the listener and secret
 # operators whose CSI drivers serve the HDFS volumes. Regular resource with an
 # early sync-wave: as a PreSync hook it was deleted and recreated on every sync
 # of the app-of-apps, taking every Stackable operator down with it.
+# Only rendered with the in-cluster HDFS, like the Stackable operators.
 apiVersion: v1
 kind: Namespace
 metadata:
@@ -26,3 +28,4 @@ stringData:
   url: oci://oci.stackable.tech/sdp-charts
   type: helm
   enableOCI: "true"
+{{ end }}
