@@ -23,7 +23,16 @@ spec:
     helm:
       releaseName: fink-broker
       valuesObject:
+        {{- /* Scheduled mode deduces the night at runtime, so no frozen night is injected. */}}
+        {{- if ne .Values.finkBroker.run.mode "scheduled" }}
         night: "{{ .Values.finkBroker.night }}"
+        {{- end }}
+        run:
+          {{- toYaml .Values.finkBroker.run | nindent 10 }}
+        {{- if eq .Values.finkBroker.run.mode "scheduled" }}
+        scheduled:
+          {{- toYaml .Values.finkBroker.scheduled | nindent 10 }}
+        {{- end }}
         log_level: "{{ .Values.finkBroker.logLevel }}"
         {{- if eq .Values.storage "s3" }}
         storage: s3
