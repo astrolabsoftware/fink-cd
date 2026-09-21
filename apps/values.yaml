@@ -63,6 +63,8 @@ s3:
   endpoint: https://minio.minio:443
 kafka:
   storageSize: "1Gi"
+  # No SCRAM credentials here: they are provisioned out of band before the
+  # deployment, see charts/kafka/values.yaml.
 hdfs:
   # HDFS robustness/capacity knobs. Empty -> charts/hdfs default
   # (single datanode, repl 1, operator-default disk per role).
