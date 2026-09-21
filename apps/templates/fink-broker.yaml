@@ -43,6 +43,8 @@ spec:
           endpoint: "{{ .Values.s3.endpoint }}"
         {{- else if eq .Values.storage "hdfs" }}
         storage: hdfs
+        hdfs:
+          external: {{ .Values.hdfs.external }}
         online_data_prefix: "{{ .Values.hdfs.onlineDataPrefix }}"
         {{- end }}
         e2e:
