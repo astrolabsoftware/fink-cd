@@ -15,7 +15,14 @@ finkBroker:
     schedule: "0 9 * * *"
     # Time of day (HH:MM, UTC) at which a run stops, on the day it started.
     # Declared next to schedule so both bounds of the run window are visible.
-    exitAt: "23:59"
+    #
+    # An hour of margin before midnight, on purpose: the deadline is resolved
+    # against the calendar date of the attempt that resolves it, so an attempt
+    # landing past midnight would aim at the NEXT day and run for a full extra
+    # day, which concurrencyPolicy: Forbid then turns into a skipped tick. The
+    # margin keeps a healthy run well clear of that boundary; it does not
+    # remove the defect, tracked in astrolabsoftware/fink-broker#1246.
+    exitAt: "23:00"
     concurrencyPolicy: Forbid
     successfulRunHistoryLimit: 3
     failedRunHistoryLimit: 3
