@@ -1,10 +1,18 @@
-# Requireb by sparkJobNamespaces
+# Required by sparkJobNamespaces.
+# Regular resource (not a PreSync hook) with an early sync-wave so the namespace
+# persists across syncs; its contents (e.g. the fink-kafka-jaas secret) are no
+# longer wiped and recreated on every sync. Owned by the app-of-apps -- the
+# fink-broker chart no longer declares it.
 apiVersion: v1
 kind: Namespace
 metadata:
   name: {{ .Values.spec.sparkNamespace }}
   annotations:
-    argocd.argoproj.io/hook: PreSync
+    argocd.argoproj.io/sync-wave: "-1"
+  {{- if .Values.finkBroker.monitoring.enabled }}
+  labels:
+    monitored: "true"
+  {{- end }}
 ---
 # Required by service account spark-operator
 # TODO upgrade spark-operator to 2.0.0 and remove RBAC below
