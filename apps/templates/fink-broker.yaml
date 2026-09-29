@@ -53,6 +53,7 @@ spec:
           enabled: {{ .Values.finkBroker.monitoring.enabled }}
         report:
           enabled: {{ .Values.finkBroker.report.enabled }}
+          namenode: "{{ join "," .Values.hdfs.namenodes }}"
           {{- with .Values.finkBroker.report.schedule }}
           schedule: "{{ . }}"
           {{- end }}
