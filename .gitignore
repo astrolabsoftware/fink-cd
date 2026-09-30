@@ -1,0 +1,2 @@
+# Site-local values, kept out of git (see values-*.local.yaml.example)
+apps/values-*.local.yaml
