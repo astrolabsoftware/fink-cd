@@ -83,7 +83,11 @@ finkBroker:
     executor:
       cores: "8"
       coreRequest: "0"
-      memory: "16000m"    # 8 x ~2GB/core, pod limit ~22.4Gi (fits a 32GB node)
+      memory: "16000m"    # 8 x ~2GB/core
+      # The 8 Python workers of the science modules outgrew the default 40%
+      # overhead (6.4Gi): executors OOMKilled on the 2026-09-29 night.
+      # Pod limit 16000m + 10g = ~26Gi, fits the bigworker (~30.8Gi allocatable).
+      memoryOverhead: "10g"
       instances: "1"
       nodeSelector:
         fink.io/pool: raw2science
@@ -93,4 +97,4 @@ finkBroker:
           value: raw2science
           effect: NoSchedule
   distribution:
-    memory: "2000m"     # pod limit ~2800Mi
+    memory: "3000m"     # pod limit ~4200Mi; 2000m executors OOMKilled on 2026-09-29
