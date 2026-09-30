@@ -45,7 +45,14 @@ spec:
         storage: hdfs
         hdfs:
           external: {{ .Values.hdfs.external }}
+          {{- with .Values.hdfs.replication }}
+          replication: "{{ . }}"
+          {{- end }}
         online_data_prefix: "{{ .Values.hdfs.onlineDataPrefix }}"
+        {{- with .Values.hdfs.hostAliases }}
+        hostAliases:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
         {{- end }}
         e2e:
           enabled: {{ .Values.finkBroker.e2e.enabled }}
