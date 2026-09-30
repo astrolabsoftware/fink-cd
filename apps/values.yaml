@@ -107,6 +107,13 @@ hdfs:
     memoryLimit: ""
     storageCapacity: ""
   onlineDataPrefix: "hdfs://simple-hdfs-namenode-default-0.simple-hdfs-namenode-default.hdfs:8020///user/185"
+  # Replication of the files the Spark jobs write: HDFS clients do not inherit
+  # it from the cluster. Empty -> the Hadoop client default (3).
+  replication: ""
+  # /etc/hosts entries of the Spark and report pods, for HDFS hosts the cluster
+  # DNS does not resolve: a list of {ip, hostnames}. Site-specific: never set
+  # it in git, pass it with `e2e/argocd.sh -l <local values file>`.
+  hostAliases: []
   # NameNode RPC addresses the balance report reads HDFS from. Both namenodes
   # of the in-cluster HA pair (charts/hdfs nameNode.replicas: 2), so the report
   # follows whichever is active.
