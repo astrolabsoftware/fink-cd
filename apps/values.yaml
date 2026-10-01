@@ -1,5 +1,8 @@
 finkBroker:
   night: "20200101"
+  # Seconds between two micro-batches of the streaming jobs (-tinterval).
+  # Empty -> fink-broker chart default (2).
+  tinterval: ""
   # One-shot by default (CI, backfill): three SparkApplications with a pinned
   # night. The values-scheduled.yaml overlay flips this to 'scheduled' for the
   # permanent daily run (ScheduledSparkApplications, night deduced at runtime).

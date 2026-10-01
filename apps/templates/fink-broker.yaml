@@ -35,6 +35,9 @@ spec:
           {{- toYaml .Values.finkBroker.scheduled | nindent 10 }}
         {{- end }}
         log_level: "{{ .Values.finkBroker.logLevel }}"
+        {{- with .Values.finkBroker.tinterval }}
+        fink_trigger_update: "{{ . }}"
+        {{- end }}
         {{- if eq .Values.storage "s3" }}
         storage: s3
         online_data_prefix: ""
