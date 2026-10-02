@@ -81,11 +81,13 @@ finkBroker:
       cores: "1"
       memory: "3000m"
     executor:
-      cores: "8"
+      # Each task runs 8 chained Python workers (science modules), so the pod
+      # memory grows with the cores: 8 cores (64 workers) were still OOMKilled on
+      # the 2026-09-29 night. 4 cores double the memory per core.
+      cores: "4"
       coreRequest: "0"
-      memory: "16000m"    # 8 x ~2GB/core
-      # The 8 Python workers of the science modules outgrew the default 40%
-      # overhead (6.4Gi): executors OOMKilled on the 2026-09-29 night.
+      memory: "16000m"
+      # The Python workers outgrew the default 40% overhead (6.4Gi).
       # Pod limit 16000m + 10g = ~26Gi, fits the bigworker (~30.8Gi allocatable).
       memoryOverhead: "10g"
       instances: "1"
