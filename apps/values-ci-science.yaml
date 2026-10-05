@@ -1,4 +1,10 @@
 finkBroker:
+  # Exercise the report CronJob for real: the chart renders it, the cluster
+  # runs it, and check-results.sh reads what it printed. A tick every minute
+  # because a CI run lasts minutes; production keeps the daily default.
+  report:
+    enabled: true
+    schedule: "* * * * *"
   raw2science:
     driver:
       cores: "2"

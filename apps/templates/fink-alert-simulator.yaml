@@ -29,7 +29,12 @@ spec:
   destination:
     server: {{ .Values.spec.destination.server }}
     namespace: {{ .Values.spec.sparkNamespace }}
+  # Auto-synced like the rest of the stack (see fink-broker.yaml).
   syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
     syncOptions:
     - CreateNamespace=true
+    - ApplyOutOfSyncOnly=true
 {{ end }}

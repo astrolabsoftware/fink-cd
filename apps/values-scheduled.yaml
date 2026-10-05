@@ -1,0 +1,20 @@
+# Scheduled-mode overlay for the fink-broker app-of-apps.
+#
+# Layer this ON TOP of a per-infrastructure values file to run fink-broker as a
+# permanent daily job: ScheduledSparkApplications that deduce the observing
+# night at runtime (see the fink-broker chart run.mode/scheduled). Infra-neutral
+# on purpose, so it composes with any values-<infra>.yaml:
+#
+#   argocd app create fink ... \
+#       --values values-cc.yaml --values values-scheduled.yaml
+#
+# Without this overlay the app-of-apps deploys one-shot SparkApplications with a
+# pinned night (backfill / rerun / CI). The schedule and night offset defaults
+# live in apps/values.yaml (nightOffsetHours: 24 -> previous complete night).
+finkBroker:
+  run:
+    mode: scheduled
+  stream2raw:
+    # Runtime {night} placeholder (resolved by the job from the deduced night),
+    # NOT a Helm-frozen night as in one-shot mode.
+    topic: 'ztf_{night}.*'
