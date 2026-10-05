@@ -99,4 +99,4 @@ finkBroker:
           value: raw2science
           effect: NoSchedule
   distribution:
-    memory: "3000m"     # pod limit ~4200Mi; 2000m executors OOMKilled on 2026-09-29
+    memory: "4000m"     # pod limit ~5600Mi; 3000m executors OOMKilled twice on 2026-10-02
