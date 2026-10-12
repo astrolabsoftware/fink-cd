@@ -1,0 +1,44 @@
+{{ if .Values.components.argoWorkflows }}
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: argo-workflows
+  namespace: argocd
+  annotations:
+    # Operators install CRDs and must be healthy before the workloads (wave 2)
+    argocd.argoproj.io/sync-wave: "0"
+  labels:
+    app.kubernetes.io/name: argo-workflows
+    app.kubernetes.io/part-of: fink
+    app.kubernetes.io/component: operator
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    chart: argo-workflows
+    repoURL: https://argoproj.github.io/argo-helm
+    # Argo Workflows v4.1.5
+    targetRevision: 2.0.12
+    helm:
+      releaseName: argo-workflows
+      valuesObject:
+        # Controller only: catch-ups are submitted with kubectl or argo
+        server:
+          enabled: false
+        controller:
+          # Service account and RBAC for the workflows of this namespace
+          workflowNamespaces: ["{{.Values.spec.sparkNamespace}}"]
+  destination:
+    server: {{ .Values.spec.destination.server }}
+    namespace: argo
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      # The CRDs are too large for a client-side apply annotation
+      - ServerSideApply=true
+      - ApplyOutOfSyncOnly=true
+{{ end }}
