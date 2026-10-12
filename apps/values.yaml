@@ -15,23 +15,26 @@ finkBroker:
   scheduled:
     # Cron firing the three jobs together, UTC. Shared by all three so they
     # agree on the same night (same side of the UTC boundary).
-    schedule: "0 9 * * *"
+    #
+    # Production timetable (scheduler/README.md in fink-broker), in UTC: the
+    # run starts just after the UTC night rollover and processes the live
+    # night as its alerts arrive.
+    schedule: "1 0 * * *"
     # Time of day (HH:MM, UTC) at which a run stops, on the day it started.
     # Declared next to schedule so both bounds of the run window are visible.
     #
-    # An hour of margin before midnight, on purpose: the deadline is resolved
-    # against the calendar date of the attempt that resolves it, so an attempt
-    # landing past midnight would aim at the NEXT day and run for a full extra
-    # day, which concurrencyPolicy: Forbid then turns into a skipped tick. The
-    # margin keeps a healthy run well clear of that boundary; it does not
-    # remove the defect, tracked in astrolabsoftware/fink-broker#1246.
-    exitAt: "23:00"
+    # Most ZTF nights are complete by 20:00 UTC; the alerts arriving later
+    # (~3%) are recovered by a catch-up of the night. Ending 4 h before
+    # midnight also keeps a restarted attempt clear of the date boundary at
+    # which the deadline would move to the next day
+    # (astrolabsoftware/fink-broker#1246).
+    exitAt: "20:00"
     concurrencyPolicy: Forbid
     successfulRunHistoryLimit: 3
     failedRunHistoryLimit: 3
-    # Hours subtracted from UTC now to deduce the night: 24 -> previous complete
-    # ZTF night (n-1), 0 -> current/live. See the ZTF topic-rollover convention.
-    nightOffsetHours: 24
+    # Hours subtracted from UTC now to deduce the night: 0 -> current/live
+    # night, as in production; 24 -> previous complete night (n-1).
+    nightOffsetHours: 0
   logLevel: "DEBUG"
   e2e:
     enabled: true
