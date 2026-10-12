@@ -141,6 +141,9 @@ hdfs:
 components:
   kafka: true
   alertSimulator: true
+  # Argo Workflows controller, running the fink-broker WorkflowTemplate that
+  # catches a closed night up
+  argoWorkflows: true
 spec:
   destination:
     server: https://kubernetes.default.svc
