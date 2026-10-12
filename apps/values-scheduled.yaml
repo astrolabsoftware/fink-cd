@@ -10,7 +10,7 @@
 #
 # Without this overlay the app-of-apps deploys one-shot SparkApplications with a
 # pinned night (backfill / rerun / CI). The schedule and night offset defaults
-# live in apps/values.yaml (nightOffsetHours: 24 -> previous complete night).
+# live in apps/values.yaml (nightOffsetHours: 0 -> current/live night).
 finkBroker:
   run:
     mode: scheduled
