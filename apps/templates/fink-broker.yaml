@@ -61,6 +61,8 @@ spec:
           enabled: {{ .Values.finkBroker.e2e.enabled }}
         monitoring:
           enabled: {{ .Values.finkBroker.monitoring.enabled }}
+        workflows:
+          enabled: {{ .Values.components.argoWorkflows }}
         report:
           enabled: {{ .Values.finkBroker.report.enabled }}
           namenode: "{{ join "," .Values.hdfs.namenodes }}"
