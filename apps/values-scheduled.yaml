@@ -8,8 +8,8 @@
 #   argocd app create fink ... \
 #       --values values-cc.yaml --values values-scheduled.yaml
 #
-# Without this overlay the app-of-apps deploys one-shot SparkApplications with a
-# pinned night (backfill / rerun / CI). The schedule and night offset defaults
+# Without this overlay the app-of-apps deploys no Spark job: nights are run
+# through the fink-broker WorkflowTemplate (CI). The schedule and night offset defaults
 # live in apps/values.yaml (nightOffsetHours: 0 -> current/live night).
 finkBroker:
   run:

@@ -1,13 +1,16 @@
 finkBroker:
+  # Default night of the fink-broker WorkflowTemplate (CI), run with
+  # fink-broker e2e/catchup.sh. Ignored by the scheduled daily run.
   night: "20200101"
   # Seconds between two micro-batches of the streaming jobs (-tinterval).
   # Empty -> fink-broker chart default (2).
   tinterval: ""
-  # One-shot by default (CI, backfill): three SparkApplications with a pinned
-  # night. The values-scheduled.yaml overlay flips this to 'scheduled' for the
-  # permanent daily run (ScheduledSparkApplications, night deduced at runtime).
+  # No Spark job deployed by default (CI): each night is submitted to the
+  # fink-broker WorkflowTemplate, as any catch-up. The values-scheduled.yaml
+  # overlay flips this to 'scheduled' for the permanent daily run
+  # (ScheduledSparkApplications, night deduced at runtime).
   run:
-    mode: oneoff
+    mode: workflow
   # Only consumed when run.mode=scheduled (forwarded to the fink-broker chart).
   # Every time in this block is UTC, never local time: the cron of a
   # ScheduledSparkApplication is evaluated in UTC, and the jobs deduce their
