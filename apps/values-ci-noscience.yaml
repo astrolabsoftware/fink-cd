@@ -1,4 +1,8 @@
 finkBroker:
+  # No Spark job deployed: the CI runs the night through the WorkflowTemplate
+  # (fink-broker e2e/catchup.sh), the path of every catch-up.
+  run:
+    mode: workflow
   # Exercise the report CronJob for real: the chart renders it, the cluster
   # runs it, and check-results.sh reads what it printed. A tick every minute
   # because a CI run lasts minutes; production keeps the daily default.
