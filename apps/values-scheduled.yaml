@@ -14,7 +14,3 @@
 finkBroker:
   run:
     mode: scheduled
-  stream2raw:
-    # Runtime {night} placeholder (resolved by the job from the deduced night),
-    # NOT a Helm-frozen night as in one-shot mode.
-    topic: 'ztf_{night}.*'

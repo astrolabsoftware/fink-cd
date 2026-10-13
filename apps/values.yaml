@@ -62,7 +62,9 @@ finkBroker:
   stream2raw:
     kafkaInSockets: ""
     finkAlertSchema: ""
-    topic: 'ztf_public_{{.Values.finkBroker.night}}'
+    # {night} is resolved by the job from its own night, not frozen here: a
+    # night run through the WorkflowTemplate reads the topic of that night.
+    topic: 'ztf_public_{night}'
     cores: ""
     coreRequest: ""
     memory: ""
