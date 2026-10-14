@@ -1,43 +1,33 @@
 finkBroker:
   # Default night of the fink-broker WorkflowTemplate (CI), run with
-  # fink-broker e2e/catchup.sh. Ignored by the scheduled daily run.
+  # fink-broker e2e/catchup.sh. Not set next to a nightly run.
   night: "20200101"
   # Seconds between two micro-batches of the streaming jobs (-tinterval).
   # Empty -> fink-broker chart default (2).
   tinterval: ""
-  # No Spark job deployed by default (CI): each night is submitted to the
-  # fink-broker WorkflowTemplate, as any catch-up. The values-scheduled.yaml
-  # overlay flips this to 'scheduled' for the permanent daily run
-  # (ScheduledSparkApplications, night deduced at runtime).
-  run:
-    mode: workflow
-  # Only consumed when run.mode=scheduled (forwarded to the fink-broker chart).
-  # Every time in this block is UTC, never local time: the cron of a
-  # ScheduledSparkApplication is evaluated in UTC, and the jobs deduce their
-  # night from UTC too, so a local-time value would drift twice a year.
-  scheduled:
-    # Cron firing the three jobs together, UTC. Shared by all three so they
-    # agree on the same night (same side of the UTC boundary).
-    #
+  # Nightly run, forwarded to the fink-broker chart: a CronWorkflow submitting
+  # its WorkflowTemplate every day on today's night. Disabled by default (CI):
+  # each night is submitted by hand, as any catch-up. The values-scheduled.yaml
+  # overlay enables it for the permanent run at CC.
+  #
+  # Every time in this block is UTC, never local time, so nothing drifts twice
+  # a year.
+  nightly:
+    enabled: false
     # Production timetable (scheduler/README.md in fink-broker), in UTC: the
     # run starts just after the UTC night rollover and processes the live
     # night as its alerts arrive.
     schedule: "1 0 * * *"
-    # Time of day (HH:MM, UTC) at which a run stops, on the day it started.
-    # Declared next to schedule so both bounds of the run window are visible.
+    # Time of day (HH:MM, UTC) at which the run stops, on the day of its
+    # night. Declared next to schedule so both bounds of the run window are
+    # visible.
     #
     # Most ZTF nights are complete by 20:00 UTC; the alerts arriving later
-    # (~3%) are recovered by a catch-up of the night. Ending 4 h before
-    # midnight also keeps a restarted attempt clear of the date boundary at
-    # which the deadline would move to the next day
-    # (astrolabsoftware/fink-broker#1246).
+    # (~3%) are recovered by a catch-up of the night.
     exitAt: "20:00"
     concurrencyPolicy: Forbid
-    successfulRunHistoryLimit: 3
-    failedRunHistoryLimit: 3
-    # Hours subtracted from UTC now to deduce the night: 0 -> current/live
-    # night, as in production; 24 -> previous complete night (n-1).
-    nightOffsetHours: 0
+    successfulJobsHistoryLimit: 3
+    failedJobsHistoryLimit: 3
   logLevel: "DEBUG"
   e2e:
     enabled: true
@@ -45,11 +35,11 @@ finkBroker:
     enabled: false
   # Daily CronJob printing what entered and what left the broker for each
   # observing night (finkctl get balance). Only meaningful with
-  # run.mode=scheduled and storage=hdfs.
+  # nightly.enabled and storage=hdfs.
   report:
     enabled: false
-    # UTC. Half an hour after scheduled.exitAt, once the three jobs of the
-    # daily run have stopped. CI overrides it to fire immediately, since a run
+    # UTC. Half an hour after nightly.exitAt, once the three jobs of the
+    # nightly run have stopped. CI overrides it to fire immediately, since a run
     # lasts minutes, not a day.
     schedule: "30 20 * * *"
     image:
