@@ -1,16 +1,16 @@
-# Scheduled-mode overlay for the fink-broker app-of-apps.
+# Nightly-run overlay for the fink-broker app-of-apps.
 #
-# Layer this ON TOP of a per-infrastructure values file to run fink-broker as a
-# permanent daily job: ScheduledSparkApplications that deduce the observing
-# night at runtime (see the fink-broker chart run.mode/scheduled). Infra-neutral
-# on purpose, so it composes with any values-<infra>.yaml:
+# Layer this ON TOP of a per-infrastructure values file to run fink-broker
+# permanently: a CronWorkflow submitting the fink-broker WorkflowTemplate every
+# day on today's night (see the fink-broker chart nightly block).
+# Infra-neutral on purpose, so it composes with any values-<infra>.yaml:
 #
 #   argocd app create fink ... \
 #       --values values-cc.yaml --values values-scheduled.yaml
 #
-# Without this overlay the app-of-apps deploys no Spark job: nights are run
-# through the fink-broker WorkflowTemplate (CI). The schedule and night offset defaults
-# live in apps/values.yaml (nightOffsetHours: 0 -> current/live night).
+# Without this overlay no night runs by itself: nights are submitted to the
+# WorkflowTemplate by hand (CI, catch-ups). The schedule and deadline live in
+# apps/values.yaml.
 finkBroker:
-  run:
-    mode: scheduled
+  nightly:
+    enabled: true
