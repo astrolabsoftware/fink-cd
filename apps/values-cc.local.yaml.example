@@ -1,0 +1,14 @@
+# Site-local values for the fink app-of-apps at CC, kept out of git.
+#
+# Copy to values-cc.local.yaml (git-ignored) next to this file and fill in the
+# real addresses. fink-broker's e2e/argocd.sh picks it up for `-i cc` and hands
+# it to Argo CD as a literal values block: it only lives in the fink
+# Application, in the cluster.
+
+hdfs:
+  # The production HDFS NameNode (hdfs.onlineDataPrefix, hdfs.namenodes) is not
+  # in the cluster DNS: /etc/hosts entry of the Spark and report pods. The
+  # DataNodes need none, they are reached by the IP the NameNode reports.
+  hostAliases:
+    - ip: "192.0.2.10"   # ccmaster1 IP, e.g. from `openstack server list --name ccmaster1`
+      hostnames: ["ccmaster1"]

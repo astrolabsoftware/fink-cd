@@ -16,9 +16,12 @@ metadata:
 ---
 # Required by service account spark-operator
 # TODO upgrade spark-operator to 2.0.0 and remove RBAC below
+# Regular resource with an early sync-wave, like the spark namespace above: as a
+# PreSync hook it was deleted and recreated on every sync of the app-of-apps,
+# taking the running Spark operator and its webhook down with it.
 apiVersion: v1
 kind: Namespace
 metadata:
   name: spark-operator
   annotations:
-    argocd.argoproj.io/hook: PreSync
+    argocd.argoproj.io/sync-wave: "-1"
