@@ -82,16 +82,19 @@ finkBroker:
       cores: "1"
       memory: "3000m"
     executor:
-      # Each task runs 8 chained Python workers (science modules), so the pod
-      # memory grows with the cores: 8 cores (64 workers) were still OOMKilled on
-      # the 2026-09-29 night. 4 cores double the memory per core.
-      cores: "4"
+      # Each task runs 8 chained Python workers (science modules), which live
+      # in the memory overhead, outside the JVM heap. 1 executor x 4 cores (32
+      # workers, 16000m heap + 10g overhead) was OOMKilled at the peak of the
+      # 2026-10-15 live night: the heap was oversized and the workers had
+      # ~310Mi each. 2 executors x 2 cores keep the heap at 2GB per core, as in
+      # production, and give the 16 workers of each pod twice the overhead.
+      cores: "2"
       coreRequest: "0"
-      memory: "16000m"
-      # The Python workers outgrew the default 40% overhead (6.4Gi).
-      # Pod limit 16000m + 10g = ~26Gi, fits the bigworker (~30.8Gi allocatable).
+      memory: "4000m"
+      # Pod limit 4000m + 10g = ~14Gi: both executors fit the bigworker
+      # (~30.8Gi allocatable).
       memoryOverhead: "10g"
-      instances: "1"
+      instances: "2"
       nodeSelector:
         fink.io/pool: raw2science
       tolerations:
