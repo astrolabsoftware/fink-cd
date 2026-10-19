@@ -1,4 +1,26 @@
 hdfs:
+  # The jobs write to the CC-IN2P3 production HDFS, outside the cluster
+  # (fink-broker issue #1241): /user/185 is provisioned there by its admins,
+  # the namenode and datanode ports are opened to the cluster egress. Nothing
+  # HDFS-related is deployed in the cluster.
+  #
+  # To fall back to the in-cluster Stackable HDFS sized below (the knobs are
+  # ignored while external is true), set external to false and restore the
+  # apps/values.yaml onlineDataPrefix:
+  #   hdfs://simple-hdfs-namenode-default-0.simple-hdfs-namenode-default.hdfs:8020///user/185
+  external: true
+  onlineDataPrefix: "hdfs://ccmaster1:8020///user/185"
+  # Aligned with the dfs.replication of the production cluster.
+  replication: "2"
+  # ccmaster1 and the datanodes are not in the cluster DNS: ccmaster1 is
+  # resolved through hdfs.hostAliases, provided out of git by
+  # `e2e/argocd.sh -l` (doc/deploy-cc.md). DataNodes are reached by the IP the
+  # NameNode reports.
+  # Single NameNode (ccmaster2 is a Secondary NameNode, not an HA standby).
+  # To fall back to the in-cluster HDFS, also restore the apps/values.yaml
+  # namenodes.
+  namenodes:
+    - ccmaster1:8020
   # Host a ~20GB dataset with redundancy. Replication 2 across 3 datanodes:
   #   usable ~= 3 x 20Gi / 2 = ~30GB raw-equivalent (comfortable headroom for
   #   20GB), and the cluster survives the loss of one datanode.
@@ -22,7 +44,8 @@ kafka:
   # (KRaft can't write __cluster_metadata/quorum-state). Size for preprod.
   storageSize: "50Gi"
 
-# storage defaults to hdfs (see apps/values.yaml) -> in-cluster HDFS stack.
+# storage defaults to hdfs (see apps/values.yaml); hdfs.external above selects
+# the production HDFS rather than the in-cluster stack.
 components:
   kafka: true           # Local kafka for fink distribution output
   alertSimulator: false # Production: no alert simulator
@@ -33,7 +56,9 @@ finkBroker:
     enabled: false
   # Daily balance of the previous runs, printed to the CronJob logs. Requires
   # the finkctl image to be published first (finkctl build.sh / push-image.sh),
-  # otherwise the pod stays in ImagePullBackOff.
+  # otherwise the pod stays in ImagePullBackOff. Works with both HDFS modes:
+  # finkctl reads the datasets natively from the namenode(s) in hdfs.namenodes,
+  # in-cluster (Stackable) or external (here, the production HDFS).
   report:
     enabled: true
   stream2raw:
@@ -56,9 +81,15 @@ finkBroker:
       cores: "1"
       memory: "3000m"
     executor:
-      cores: "8"
+      # Each task runs 8 chained Python workers (science modules), so the pod
+      # memory grows with the cores: 8 cores (64 workers) were still OOMKilled on
+      # the 2026-09-29 night. 4 cores double the memory per core.
+      cores: "4"
       coreRequest: "0"
-      memory: "16000m"    # 8 x ~2GB/core, pod limit ~22.4Gi (fits a 32GB node)
+      memory: "16000m"
+      # The Python workers outgrew the default 40% overhead (6.4Gi).
+      # Pod limit 16000m + 10g = ~26Gi, fits the bigworker (~30.8Gi allocatable).
+      memoryOverhead: "10g"
       instances: "1"
       nodeSelector:
         fink.io/pool: raw2science
@@ -68,4 +99,4 @@ finkBroker:
           value: raw2science
           effect: NoSchedule
   distribution:
-    memory: "2000m"     # pod limit ~2800Mi
+    memory: "4000m"     # pod limit ~5600Mi; 3000m executors OOMKilled twice on 2026-10-02

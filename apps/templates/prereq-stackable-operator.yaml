@@ -1,10 +1,15 @@
-# Requireb by sparkJobNamespaces
+{{ if and (eq .Values.storage "hdfs") (not .Values.hdfs.external) }}
+# Namespace of the Stackable operators, including the listener and secret
+# operators whose CSI drivers serve the HDFS volumes. Regular resource with an
+# early sync-wave: as a PreSync hook it was deleted and recreated on every sync
+# of the app-of-apps, taking every Stackable operator down with it.
+# Only rendered with the in-cluster HDFS, like the Stackable operators.
 apiVersion: v1
 kind: Namespace
 metadata:
   name: stackable-operators
   annotations:
-    argocd.argoproj.io/hook: PreSync
+    argocd.argoproj.io/sync-wave: "-1"
   labels:
     pod-security.kubernetes.io/enforce: privileged
 ---
@@ -14,7 +19,8 @@ metadata:
   name: stackable-oci-repo
   namespace: argocd
   annotations:
-    argocd.argoproj.io/hook: PreSync
+    # Before the Stackable operator Applications (wave 0) pull their charts
+    argocd.argoproj.io/sync-wave: "-1"
   labels:
     argocd.argoproj.io/secret-type: repository
 stringData:
@@ -22,3 +28,4 @@ stringData:
   url: oci://oci.stackable.tech/sdp-charts
   type: helm
   enableOCI: "true"
+{{ end }}
