@@ -64,7 +64,8 @@ finkBroker:
   stream2raw:
     kafkaInSockets: "public.alerts.ztf.uw.edu:9092"
     finkAlertSchema: "/home/fink/fink-alert-schemas/ztf/template_schema_ZTF_3p3.avro"
-    topic: 'ztf_{{.Values.finkBroker.night}}.*'
+    # {night} resolved by the job (see apps/values.yaml)
+    topic: 'ztf_{night}.*'
     # ZTF executors OOMKilled (exit 137) at the 1000m default. Spark applies a
     # 0.4 memory-overhead factor, so the pod limit is memory x 1.4 (1000m ->
     # 1400Mi, 2000m -> 2800Mi). Nodes (m1.large) have ~7.6GB allocatable, so
@@ -81,16 +82,22 @@ finkBroker:
       cores: "1"
       memory: "3000m"
     executor:
-      # Each task runs 8 chained Python workers (science modules), so the pod
-      # memory grows with the cores: 8 cores (64 workers) were still OOMKilled on
-      # the 2026-09-29 night. 4 cores double the memory per core.
-      cores: "4"
+      # Each task runs 8 chained Python workers (science modules), which live
+      # in the memory overhead, outside the JVM heap. 1 executor x 4 cores (32
+      # workers, 16000m heap + 10g overhead) was OOMKilled at the peak of the
+      # 2026-10-15 live night: the heap was oversized and the workers had
+      # ~310Mi each. 2 executors x 2 cores (4000m + 10g) were OOMKilled too, on
+      # the 2026-10-16 live night and its catch-up: the Python workers reach
+      # ~6GB per core at the peak, the JVM ~1GB above its heap.
+      # Production shape (1 core, 2GB heap per executor), but 3 executors
+      # instead of 8: 8 x (2g + ~7g) would not fit the bigworker.
+      cores: "1"
       coreRequest: "0"
-      memory: "16000m"
-      # The Python workers outgrew the default 40% overhead (6.4Gi).
-      # Pod limit 16000m + 10g = ~26Gi, fits the bigworker (~30.8Gi allocatable).
-      memoryOverhead: "10g"
-      instances: "1"
+      memory: "2000m"
+      # Pod limit 2000m + 8g = ~10Gi: the 3 executors fit the bigworker
+      # (~30.8Gi allocatable).
+      memoryOverhead: "8g"
+      instances: "3"
       nodeSelector:
         fink.io/pool: raw2science
       tolerations:
