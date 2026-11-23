@@ -3,9 +3,11 @@ finkBroker:
   # Empty -> fink-broker chart default (2).
   tinterval: ""
   # Nightly run, forwarded to the fink-broker chart: a CronWorkflow submitting
-  # its WorkflowTemplate every day on today's night. Disabled by default (CI):
-  # each night is submitted by hand, as any catch-up. The values-scheduled.yaml
-  # overlay enables it for the permanent run at CC.
+  # its WorkflowTemplate every day on today's night. Disabled by default: each
+  # night is submitted by hand, as any catch-up. The CI overlays deploy it with
+  # a never-firing schedule, so that fink-broker e2e/workflow.sh --nightly
+  # submits from it; the values-scheduled.yaml overlay enables it for the
+  # permanent run at CC.
   #
   # Every time in this block is UTC, never local time, so nothing drifts twice
   # a year.

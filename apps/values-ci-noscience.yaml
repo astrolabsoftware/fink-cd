@@ -1,4 +1,12 @@
 finkBroker:
+  # Deploy the nightly CronWorkflow, so that fink-broker e2e/workflow.sh
+  # --nightly submits a run from the real object. It must never fire by
+  # itself (February 31st), or a CI run spanning 00:01 UTC would start a real
+  # nightly run holding the mutex of today's night. "1 0" keeps the report's
+  # run window (--cron) at 00:01, as at CC.
+  nightly:
+    enabled: true
+    schedule: "1 0 31 2 *"
   # Exercise the report CronJob for real: the chart renders it, the cluster
   # runs it, and check-results.sh reads what it printed. A tick every minute
   # because a CI run lasts minutes; production keeps the daily default.
