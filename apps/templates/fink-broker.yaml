@@ -24,7 +24,6 @@ spec:
     helm:
       releaseName: fink-broker
       valuesObject:
-        night: "{{ .Values.finkBroker.night }}"
         nightly:
           {{- toYaml .Values.finkBroker.nightly | nindent 10 }}
         log_level: "{{ .Values.finkBroker.logLevel }}"
@@ -59,6 +58,9 @@ spec:
           namenode: "{{ join "," .Values.hdfs.namenodes }}"
           {{- with .Values.finkBroker.report.schedule }}
           schedule: "{{ . }}"
+          {{- end }}
+          {{- with .Values.finkBroker.report.prodApi }}
+          prodApi: "{{ . }}"
           {{- end }}
           {{- with .Values.finkBroker.report.image.tag }}
           image:

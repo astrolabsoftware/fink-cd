@@ -1,7 +1,4 @@
 finkBroker:
-  # Default night of the fink-broker WorkflowTemplate (CI), run with
-  # fink-broker e2e/catchup.sh. Not set next to a nightly run.
-  night: "20200101"
   # Seconds between two micro-batches of the streaming jobs (-tinterval).
   # Empty -> fink-broker chart default (2).
   tinterval: ""
@@ -42,6 +39,9 @@ finkBroker:
     # nightly run have stopped. CI overrides it to fire immediately, since a run
     # lasts minutes, not a day.
     schedule: "30 20 * * *"
+    # Base URL of the Fink API each night is compared with (PROD and CHECK
+    # columns). Empty -> no comparison.
+    prodApi: ""
     image:
       # Empty -> fink-broker chart default
       tag: ""
@@ -57,7 +57,9 @@ finkBroker:
     finkAlertSchema: ""
     # {night} is resolved by the job from its own night, not frozen here: a
     # night run through the WorkflowTemplate reads the topic of that night.
-    topic: 'ztf_public_{night}'
+    # The test data written by the fink-alert-simulator; values-cc.yaml reads
+    # the ZTF topics instead, ztf_{night}.*
+    topic: 'sim_ztf_public_{night}'
     cores: ""
     coreRequest: ""
     memory: ""
@@ -83,6 +85,7 @@ s3:
   endpoint: https://minio.minio:443
 kafka:
   storageSize: "1Gi"
+  retentionHours: ""
   # No SCRAM credentials here: they are provisioned out of band before the
   # deployment, see charts/kafka/values.yaml.
 hdfs:

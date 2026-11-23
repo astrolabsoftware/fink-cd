@@ -42,7 +42,11 @@ kafka:
   # The 1Gi default (apps/values.yaml, used by CI) fills in minutes under a
   # real alert stream and crashloops the broker on "No space left on device"
   # (KRaft can't write __cluster_metadata/quorum-state). Size for preprod.
-  storageSize: "50Gi"
+  # 50Gi with the default 168h retention filled up on 2026-11-22 after a week
+  # of nightly + catch-up distribution topics: distribution is consumed the
+  # same day; 144h on 100Gi keeps ~2x headroom over that week.
+  storageSize: "100Gi"
+  retentionHours: "144"
 
 # storage defaults to hdfs (see apps/values.yaml); hdfs.external above selects
 # the production HDFS rather than the in-cluster stack.
@@ -61,6 +65,8 @@ finkBroker:
   # in-cluster (Stackable) or external (here, the production HDFS).
   report:
     enabled: true
+    # Compare each night with the production statistics
+    prodApi: "https://api.ztf.fink-portal.org"
   stream2raw:
     kafkaInSockets: "public.alerts.ztf.uw.edu:9092"
     finkAlertSchema: "/home/fink/fink-alert-schemas/ztf/template_schema_ZTF_3p3.avro"
