@@ -65,6 +65,8 @@ finkBroker:
   # in-cluster (Stackable) or external (here, the production HDFS).
   report:
     enabled: true
+    # Compare each night with the production statistics
+    prodApi: "https://api.ztf.fink-portal.org"
   stream2raw:
     kafkaInSockets: "public.alerts.ztf.uw.edu:9092"
     finkAlertSchema: "/home/fink/fink-alert-schemas/ztf/template_schema_ZTF_3p3.avro"

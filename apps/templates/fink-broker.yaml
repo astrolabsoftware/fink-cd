@@ -60,6 +60,9 @@ spec:
           {{- with .Values.finkBroker.report.schedule }}
           schedule: "{{ . }}"
           {{- end }}
+          {{- with .Values.finkBroker.report.prodApi }}
+          prodApi: "{{ . }}"
+          {{- end }}
           {{- with .Values.finkBroker.report.image.tag }}
           image:
             tag: "{{ . }}"

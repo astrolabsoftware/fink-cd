@@ -42,6 +42,9 @@ finkBroker:
     # nightly run have stopped. CI overrides it to fire immediately, since a run
     # lasts minutes, not a day.
     schedule: "30 20 * * *"
+    # Base URL of the Fink API each night is compared with (PROD and CHECK
+    # columns). Empty -> no comparison.
+    prodApi: ""
     image:
       # Empty -> fink-broker chart default
       tag: ""
