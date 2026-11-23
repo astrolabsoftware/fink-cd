@@ -25,6 +25,7 @@ spec:
     helm:
       valuesObject:
         storageSize: "{{ .Values.kafka.storageSize }}"
+        retentionHours: "{{ .Values.kafka.retentionHours }}"
   syncPolicy:
     automated:
       prune: true
