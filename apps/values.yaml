@@ -37,10 +37,12 @@ finkBroker:
   # nightly.enabled and storage=hdfs.
   report:
     enabled: false
-    # UTC. Half an hour after nightly.exitAt, once the three jobs of the
-    # nightly run have stopped. CI overrides it to fire immediately, since a run
-    # lasts minutes, not a day.
-    schedule: "30 20 * * *"
+    # UTC. An hour and a half after nightly.exitAt: the three jobs of the
+    # nightly run have stopped, and production has published its statistics
+    # for the night (seen between 20:29Z and 20:41Z), which prodApi compares
+    # with. CI overrides it to fire immediately, since a run lasts minutes, not
+    # a day.
+    schedule: "30 21 * * *"
     # Base URL of the Fink API each night is compared with (PROD and CHECK
     # columns). Empty -> no comparison.
     prodApi: ""
